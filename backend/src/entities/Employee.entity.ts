@@ -33,6 +33,15 @@ export class Employee{
     @Column({ name: 'hr_id', type:"int", nullable: true })
     hr_id: number;
 
+    @Column({name:'dir_id',type:'int', nullable:true})
+    dir_id: number;
+
+    @Column({type:"varchar",length: 255 })
+    address: string;
+
+    @Column({type:"varchar", unique: true })
+    phno: string;
+
     @ManyToOne(()=>Department,(dept)=>dept.employees)
     @JoinColumn({ name: 'dept_id' })
     department: Department;
@@ -55,14 +64,15 @@ export class Employee{
     @OneToMany(()=>Employee,(emp)=>emp.hr)
     hrTeam:Employee[];
 
-    @Column({type:"varchar",length: 255 })
-    address: string;
+    @ManyToOne(()=>Employee,(e)=>e.directReports,{nullable:true})
+    @JoinColumn({ name: 'dir_id' })
+    director: Employee;
 
-    @Column({type:"varchar", unique: true })
-    phno: string;
+    @OneToMany(()=>Employee,(e)=>e.director)
+    directReports:Employee[];
 
     @OneToMany(() => LeaveRequest, (lr) => lr.employee)
-    leaveRequests: LeaveRequest[];
+    leaveRequests: LeaveRequest[];  
 
     @OneToMany(() => LeaveBalance, (lb) => lb.employees)
     leaveBalances: LeaveBalance[];

@@ -6,10 +6,12 @@ const ApplyLeave: React.FC = () => {
   const [reason, setReason] = useState("");
   const [leaveType, setLeaveType] = useState("");
   const [error, setError] = useState("");
+  const emp_id = localStorage.getItem("role");
 
   const handleLeave = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
 
     // Basic validation
     if (!leaveType || !startDate || !endDate || !reason) {
@@ -47,6 +49,7 @@ const ApplyLeave: React.FC = () => {
       <h2 style={{ textAlign: "center" }}>Apply for Leave</h2>
       <form onSubmit={handleLeave}>
         <div style={{ marginBottom: "15px" }}>
+          <h1>Role: {emp_id}</h1>
           <label style={{ display: "block", marginBottom: "5px" }}>Leave Type</label>
           <select
             value={leaveType}
