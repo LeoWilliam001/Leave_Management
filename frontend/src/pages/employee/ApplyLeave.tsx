@@ -4,15 +4,16 @@ const ApplyLeave: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
-  const [leaveType, setLeaveType] = useState("");
+  const [leaveType, setLeaveType] = useState<number>(0);
   const [error, setError] = useState("");
-  const emp_id = localStorage.getItem("role");
+  const emp_id = localStorage.getItem("emp_id");
 
-  const handleLeave = (e: React.FormEvent) => {
+  const handleLeave = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-
+    try
+    {
     // Basic validation
     if (!leaveType || !startDate || !endDate || !reason) {
       setError("All fields are required.");
@@ -29,7 +30,31 @@ const ApplyLeave: React.FC = () => {
         setError("Start date must begin after this day");
         return;
     }
+    const daysdiff=(new Date(endDate).getTime() - new Date(startDate).getTime())/(1000 * 60 * 60 * 24);
 
+    const response = await fetch("http://localhost:3000/api/leave/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            emp_id: emp_id,
+            leave_type: leaveType,
+            start_date: startDate,
+            end_date: endDate,
+            reason: reason,
+            num_days: daysdiff
+          }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+      console.log("Employee ID : "+emp_id);
+
+    console.log("Days : "+daysdiff);
     console.log({
       leaveType,
       startDate,
@@ -38,28 +63,32 @@ const ApplyLeave: React.FC = () => {
     });
 
     alert("Leave request submitted successfully!");
-    setLeaveType("");
+    setLeaveType(0);
     setStartDate("");
     setEndDate("");
     setReason("");
-  };
+  }
+  catch(err:any){
+    setError(err.message);
+  }
+};
 
   return (
     <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
       <h2 style={{ textAlign: "center" }}>Apply for Leave</h2>
       <form onSubmit={handleLeave}>
         <div style={{ marginBottom: "15px" }}>
-          <h1>Role: {emp_id}</h1>
+          <h1>Employee ID: {emp_id}</h1>
           <label style={{ display: "block", marginBottom: "5px" }}>Leave Type</label>
           <select
             value={leaveType}
-            onChange={(e) => setLeaveType(e.target.value)}
+            onChange={(e) => setLeaveType(Number(e.target.value))}
             style={{ width: "100%", padding: "8px" }}
           >
             <option value="">Select Leave Type</option>
-            <option value="sick">Sick Leave</option>
-            <option value="casual">Casual Leave</option>
-            <option value="earned">Earned Leave</option>
+            <option value={1}>Sick Leave</option>
+            <option value={2}>Casual Leave</option>
+            <option value={3}>Earned Leave</option>
           </select>
         </div>
 

@@ -2,37 +2,59 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "t
 import { Employee } from "./Employee.entity";
 import { LeaveType } from "./LeaveType.entity";
 
+export enum ApprovalStatus {
+  Pending = "Pending",
+  Approved = "Approved",
+  Rejected = "Rejected",
+  NotRequired = "Not Required",
+}
+
+export enum LeaveStatus {
+  Pending = "Pending",
+  Approved = "Approved",
+  Rejected = "Rejected",
+}
+
 @Entity('leave_request')
-export class LeaveRequest{
-    @PrimaryGeneratedColumn()
-    lr_id: number;
+export class LeaveRequest {
+  @PrimaryGeneratedColumn()
+  lr_id: number;
 
-    @Column({type:'int'}) //start
-    emp_id:number;
+  @Column({ type: 'int' })
+  emp_id: number;
 
-    @Column({type:'int'})
-    leave_type_id:number;  //stop
+  @Column({ type: 'int' })
+  leave_type: number;
 
-    @Column({type:'date'})
-    start_date: Date;
+  @Column({ type: 'date' })
+  start_date: Date;
 
-    @Column({type:'date'})
-    end_date: Date;
+  @Column({ type: 'date' })
+  end_date: Date;
 
-    @Column({type:'varchar'})
-    reason: string;
+  @Column({ type: 'text', nullable: true })
+  reason: string;
 
-    @Column({type:'varchar'})
-    next_level_of_approval: string;
+  @Column({ type: 'enum', enum: ApprovalStatus, default: ApprovalStatus.NotRequired})
+  manager_approval: ApprovalStatus;
 
-    @Column({type:'varchar'})
-    status: "Pending" | "Approved" | "Rejected";
+  @Column({type: 'enum', enum: ApprovalStatus, default: ApprovalStatus.NotRequired })
+  hr_approval: ApprovalStatus;
 
-    @ManyToOne(()=>Employee,(lr)=>lr.leaveRequests)
-    @JoinColumn({ name: 'emp_id' })
-    employee: Employee;
+  @Column({type: 'enum', enum: ApprovalStatus, default: ApprovalStatus.NotRequired })
+  dir_approval: ApprovalStatus;
 
-    @ManyToOne(()=>LeaveType,(lr)=>lr.leaveRequests)
-    @JoinColumn({ name: 'leave_type_id' })
-    leaveType: LeaveType;
+  @Column({ type: 'enum', enum: LeaveStatus, default: LeaveStatus.Pending })
+  status: LeaveStatus;
+
+  @Column({ type: 'int' })
+  num_days: number;
+
+  @ManyToOne(()=>Employee,(lr)=>lr.leaveRequests)
+  @JoinColumn({ name: 'emp_id' })
+  employee: Employee;
+
+  @ManyToOne(()=>LeaveType,(lr)=>lr.leaveRequests)
+  @JoinColumn({ name: 'leave_type' })
+  leaveType: LeaveType;
 }

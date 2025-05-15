@@ -5,6 +5,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import EmployeeDashboard from "./pages/employee/EmpDashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import ApplyLeave from "./pages/employee/ApplyLeave";
+import LeaveRequest from "./pages/leave/LeaveRequest";
+import HRLeaveRequests from "./pages/hr/HRLeaveRequest";
 
 const App: React.FC = () => {
   return (
@@ -17,14 +19,14 @@ const App: React.FC = () => {
         <Route
           path="/admin_dash"
           element={
-            <PrivateRoute allowedRoles={[1, 2]}>
+            <PrivateRoute allowedRoles={[1,2,6]}>
               <AdminDashboard />
             </PrivateRoute>
           }
         />
         <Route path="/dashboard"
           element={
-            <PrivateRoute allowedRoles={[3,4]}>
+            <PrivateRoute allowedRoles={[3,4,5]}>
               <EmployeeDashboard />
             </PrivateRoute>
           }
@@ -34,6 +36,22 @@ const App: React.FC = () => {
           element={
             <PrivateRoute allowedRoles={[3,4]}>
               <ApplyLeave />
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="/leavereq"
+          element={
+            <PrivateRoute allowedRoles={[3,4,5]}>
+              <LeaveRequest/>
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="/hr/leaverequests"
+          element={
+            <PrivateRoute allowedRoles={[1,2,6]}>
+              <HRLeaveRequests/>
             </PrivateRoute>
           }
         />

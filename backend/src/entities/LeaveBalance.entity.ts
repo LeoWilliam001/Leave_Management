@@ -17,9 +17,6 @@ export class LeaveBalance{
     total_days: number;
 
     @Column({type:'int'})
-    used_days:number;
-
-    @Column({type:'int'})
     bal_days:number;
 
     @Column({type:'int'})

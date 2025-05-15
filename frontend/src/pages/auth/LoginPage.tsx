@@ -30,12 +30,16 @@ const LoginForm: React.FC = () => {
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-      console.log(data);
+      console.log("The reultant data : "+data);
       setToken(data.user.token);
       localStorage.setItem("token", data.user.token); 
       localStorage.setItem("role",data.user.user.role_id);
+      localStorage.setItem("emp_id",data.user.user.id);
+      localStorage.setItem("name",data.user.user.name);
+
+      localStorage.setItem("emp",JSON.stringify(data.user.user));
       alert("Login successful!");
-      if (data.user.user.role_id === 1 || data.user.user.role_id === 2) {
+      if (data.user.user.role_id === 1 || data.user.user.role_id === 2 || data.user.user.role_id ===6) {
         navigate("/admin_dash"); 
       } else {
         navigate("/dashboard"); 
