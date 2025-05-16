@@ -21,7 +21,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, allowedRoles }) =
     return <Navigate to="/" />;
   }
 
-  return children; // If authenticated and role is allowed, render the child component
+  return children; 
 };
 
 export default PrivateRoute;

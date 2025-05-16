@@ -48,6 +48,16 @@ export class LeaveService {
     });
   }
 
+  //Get leave requests by employee id
+  async getLeaveRequestsByEmpId(emp_id: number) {
+    const leaveRequestRepo = AppDataSource.getRepository(LeaveRequest);
+    return await leaveRequestRepo.find({
+      where: { emp_id },
+      relations: ["employee"], 
+    });
+  };
+
+
   // Get leave requests by manager
   async getLeaveRequestsByManager(manager_id: number) {
     const employees = await this.employeeRepo.find({
@@ -66,19 +76,27 @@ export class LeaveService {
     });
   }
 
-  async getLeaveRequestsByHr(hr_id: number){
-    const employees=await this.employeeRepo.find({
-        where:{hr_id}
+  async getLeaveRequestsByHr(hr_id: number) {
+    // Fetch employees managed by the HR
+    const employees = await this.employeeRepo.find({
+      where: { hr_id },
     });
-
-    if(!employees.length)
-    {
-        return [];
+  
+    if (!employees.length) {
+      return [];
     }
-    const employeeIds=employees.map((emp)=>emp.emp_id);
+  
+    // Extract employee IDs
+    const employeeIds = employees.map((emp) => emp.emp_id);
+  
+    // Fetch leave requests where manager approval is either Approved or NotRequired
     return await this.leaveRequestRepo.find({
-        where:{emp_id: In(employeeIds)},
-        relations:["employee","leaveType"],
+      where: {
+        emp_id: In(employeeIds),
+        manager_approval: In([ApprovalStatus.Approved, ApprovalStatus.NotRequired]), 
+        hr_approval: In([ApprovalStatus.Pending])// Add condition for manager approval
+      },
+      relations: ["employee", "leaveType"],
     });
   }
 }

@@ -7,6 +7,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import ApplyLeave from "./pages/employee/ApplyLeave";
 import LeaveRequest from "./pages/leave/LeaveRequest";
 import HRLeaveRequests from "./pages/hr/HRLeaveRequest";
+import LeaveStatus from "./pages/employee/LeaveStatus";
+import AllEmployees from "./pages/admin/ViewEmployees";
 
 const App: React.FC = () => {
   return (
@@ -55,7 +57,24 @@ const App: React.FC = () => {
             </PrivateRoute>
           }
         />
+
+        <Route path="/myleavestatus"
+          element={
+            <PrivateRoute allowedRoles={[3,4,5]}>
+              <LeaveStatus/>
+            </PrivateRoute>
+          }
+        />
+
+      <Route path="/hr/viewemployees"
+          element={
+            <PrivateRoute allowedRoles={[1,2,6]}>
+              <AllEmployees/>
+            </PrivateRoute>
+          }
+        />
       </Routes>
+
     </Router>
   );
 };

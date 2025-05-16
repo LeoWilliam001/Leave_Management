@@ -14,17 +14,28 @@ export class EmpService {
   async getAllEmployees(filters?: FindOptionsWhere<Employee>) {
     return await this.employeeRepo.find({
       where: filters, // Optional filters e.g., { department: 'IT' }
+      relations:{department:true,role:true,manager:true,hr:true},
       order: { name: 'ASC' } // Default sorting
     });
   }
 
   // Get employee by ID (strict check)
   async getEmployeeById(emp_id: number) {
-    return await this.employeeRepo.findOne({
-      where: { emp_id },
-      relations: ['department'] // Optional: Load relationships
+    console.log(emp_id);
+    const empRepo = AppDataSource.getRepository(Employee);
+    return await empRepo.findOne({
+      where: { emp_id }
     });
   }
+  
 
+  async updateEmployeePassword(empId: number, rawPassword: string): Promise<boolean> {
+    const employee = await this.employeeRepo.findOne({ where: { emp_id: empId } });
+    if (!employee) return false;
+  
+    employee.password = rawPassword;
+    await this.employeeRepo.save(employee);
+    return true;
+  }
   
 }

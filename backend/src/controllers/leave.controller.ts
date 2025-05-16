@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { LeaveService } from "../services/leave.service";
 import { AppDataSource } from "../data-source";
 import { ApprovalStatus, LeaveRequest, LeaveStatus } from "../entities/LeaveRequest.entity";
+import { Holiday } from "../entities/Holiday.entity";
 
 const leaveService = new LeaveService();
 
@@ -33,6 +34,18 @@ export const getLeaveRequestById = async (req: Request, res: Response) => {
     if (!leaveRequest) {
       return res.status(404).json({ message: "Leave request not found" });
     }
+    res.status(200).json(leaveRequest);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch leave request" });
+  }
+};
+
+export const getLeaveRequestByEmpId = async (req: Request, res: Response) => {
+  try {
+    const { emp_id } = req.params;
+    console.log("Employee id: "+emp_id);
+    const leaveRequest = await leaveService.getLeaveRequestsByEmpId(Number(emp_id));
     res.status(200).json(leaveRequest);
   } catch (error) {
     console.error(error);
@@ -131,3 +144,14 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to approve/reject leave request" });
   }
 };
+
+// export const getHolidays = async (req: Request, res: Response) => {
+//   try {
+//     const holidays = await AppDataSource.getRepository(Holiday).find();
+//     console.log(holidays);
+//     res.status(200).json(holidays);
+//   } catch (error) {
+//     // console.error(error);
+//     res.status(500).json({ message: "Failed to fetch holidays" });
+//   }
+// };

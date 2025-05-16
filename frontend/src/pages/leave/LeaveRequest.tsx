@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import "../../styles/LeaveRequest.css"; // Import CSS for styling
+import Sidebar from "../employee/EmpSideBar";
 
 interface LeaveRequest {
   lr_id: number;
@@ -8,7 +10,7 @@ interface LeaveRequest {
   end_date: string;
   reason: string;
   status: string;
-  manager_approval: string; // Added manager_approval field
+  manager_approval: string;
   employee: {
     name: string;
   };
@@ -17,24 +19,17 @@ interface LeaveRequest {
 const LeaveRequest: React.FC = () => {
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [error, setError] = useState("");
-//Here is an error in storing manager id
-  const manager_id = localStorage.getItem("emp_id"); // Assuming manager's ID is stored in localStorage
+  const manager_id = localStorage.getItem("emp_id");
+
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
-        
         const response = await fetch(`http://localhost:3000/api/leave/manager/${manager_id}`);
         const data = await response.json();
 
-        // const emp = JSON.parse(localStorage.getItem("emp")|| "{}"); // Assuming HR ID is stored in localStorage
-        // const hrId=emp.hr_id;
-        // console.log("This is the hr id : "+hrId);
-        // const response = await fetch(`/api/leave/hr/${hrId}`);
-        // const data = await response.json();
         if (!response.ok) {
           throw new Error(data.message || "Failed to fetch leave requests");
         }
-        console.log(data);
 
         setLeaveRequests(data);
       } catch (err: any) {
@@ -45,9 +40,8 @@ const LeaveRequest: React.FC = () => {
     fetchLeaveRequests();
   }, [manager_id]);
 
-  const handleApprove = async (lr_id: number,app:string) => {
+  const handleApprove = async (lr_id: number, action: string) => {
     try {
-      {
       const response = await fetch(`http://localhost:3000/api/leave/approve/${lr_id}`, {
         method: "PATCH",
         headers: {
@@ -55,98 +49,82 @@ const LeaveRequest: React.FC = () => {
         },
         body: JSON.stringify({
           approver_id: manager_id,
-          action: app
+          action: action,
         }),
       });
 
-      console.log(manager_id);
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to approve leave request");
       }
 
-      // Update the leaveRequests state to reflect the approval
       setLeaveRequests((prevRequests) =>
         prevRequests.map((request) =>
           request.lr_id === lr_id
-            ? { ...request, manager_approval: app === "approve" ? "Approved" : "Rejected" }
+            ? { ...request, manager_approval: action === "approve" ? "Approved" : "Rejected" }
             : request
         )
       );
-  
-      alert(`Leave request ${app === "approve" ? "approved" : "rejected"} successfully!`);
-    }
+
+      alert(`Leave request ${action === "approve" ? "approved" : "rejected"} successfully!`);
     } catch (err: any) {
       setError(err.message);
     }
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-      <h2 style={{ textAlign: "center" }}>Manager Dashboard</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-        <thead>
-          <tr>
-            <th style={{ border: "1px solid black", padding: "8px" }}>Employee Name</th>
-            <th style={{ border: "1px solid black", padding: "8px" }}>Leave Type</th>
-            <th style={{ border: "1px solid black", padding: "8px" }}>Start Date</th>
-            <th style={{ border: "1px solid black", padding: "8px" }}>End Date</th>
-            <th style={{ border: "1px solid black", padding: "8px" }}>Reason</th>
-            <th style={{ border: "1px solid black", padding: "8px" }}>Status</th>
-            <th style={{ border: "1px solid black", padding: "8px" }}>Approval</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leaveRequests.map((request) => (
-            <tr key={request.lr_id}>
-              <td style={{ border: "1px solid black", padding: "8px" }}>{request.employee.name}</td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>{request.leave_type}</td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>{request.start_date}</td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>{request.end_date}</td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>{request.reason}</td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>{request.status}</td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>
-              {request.manager_approval === "Pending" ? (
-                <span>
-                  <button
-                    onClick={() => handleApprove(request.lr_id, "approve")}
-                    style={{
-                      padding: "5px 10px",
-                      backgroundColor: "green",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "3px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Approve
-                  </button>
-
-                  <button
-                    onClick={() => handleApprove(request.lr_id, "reject")}
-                    style={{
-                      padding: "5px 10px",
-                      backgroundColor: "red",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "3px",
-                      cursor: "pointer",
-                      marginLeft: "7px",
-                    }}
-                  >
-                    Reject
-                  </button>
-                </span>
-              ) : (
-                <span>{request.manager_approval}</span>
-              )}
-            </td>
+    <div className="dashboard-wrapper">
+      <Sidebar /> 
+      <div className="leave-container">
+        <h2>Manager Dashboard</h2>
+        {error && <p style={{ color: "#D32F2F", textAlign: "center" }}>{error}</p>}
+        <table className="leave-table">
+          <thead>
+            <tr>
+              <th>Employee Name</th>
+              <th>Leave Type</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Approval</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {leaveRequests.map((request) => (
+              <tr key={request.lr_id}>
+                <td>{request.employee.name}</td>
+                <td>{request.leave_type}</td>
+                <td>{request.start_date}</td>
+                <td>{request.end_date}</td>
+                <td>{request.reason}</td>
+                <td className="status">{request.status}</td>
+                <td>
+                  {request.manager_approval === "Pending" ? (
+                    <>
+                      <button
+                        onClick={() => handleApprove(request.lr_id, "approve")}
+                        className="approve-btn"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleApprove(request.lr_id, "reject")}
+                        className="reject-btn"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  ) : (
+                    <span className="status">{request.manager_approval}</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

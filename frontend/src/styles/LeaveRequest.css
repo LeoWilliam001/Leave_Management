@@ -1,0 +1,86 @@
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: row;
+    background-color: #F5F5F5; 
+    min-height: 100vh; 
+  }
+  
+  .dashboard-sidebar {
+    width: 250px; 
+    background-color: #009688; /* Primary color */
+    color: #ffffff; /* Text color */
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Sidebar stays fixed on the left */
+    height: 100vh; /* Full height of the viewport */
+  }
+  
+  .leave-container {
+    margin-left: 270px; /* Space for the fixed sidebar */
+    flex: 1; /* Take up the remaining space */
+    padding: 20px;
+    background-color: #ffffff; /* White background for content */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Scrollable if content overflows */
+  }
+  
+  .leave-container h2 {
+    color: #00796b; /* Accent color */
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .leave-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .leave-table th,
+  .leave-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .leave-table th {
+    background-color: #009688; /* Primary color */
+    color: #ffffff;
+  }
+  
+  .leave-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .leave-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .approve-btn {
+    background-color: #43a047; /* Success color */
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+  }
+  
+  .approve-btn:hover {
+    background-color: #388e3c; /* Darker success color */
+  }
+  
+  .reject-btn {
+    background-color: #e53935; /* Error color */
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .reject-btn:hover {
+    background-color: #c62828; /* Darker error color */
+  }

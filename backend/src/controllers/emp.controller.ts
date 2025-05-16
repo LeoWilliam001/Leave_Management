@@ -2,14 +2,13 @@ import { Request, Response } from 'express';
 import { EmpService } from '../services/emp.service';
 import { Employee } from '../entities/Employee.entity';
 
-export class EmployeeController {
-  private empService:EmpService = new EmpService();
+  const empService:EmpService = new EmpService();
 
   // Create a new employee (HR-only)
-  async createEmployee(req: Request, res: Response) {
+  export const createEmployee=async(req: Request, res: Response)=> {
     try {
       // 1. Check if the requesting user is HR
-      const requestingUser = req.emp; // Assuming JWT/auth middleware attaches the user
+      const requestingUser = req.emp; 
       if (requestingUser.role !== 2) {
         return res.status(403).json({ error: "Only HR can create employees" });
       }
@@ -18,7 +17,7 @@ export class EmployeeController {
       console.log("Header:",req.headers);
       console.log("Incoming body:", req.body);
       const employeeData: Partial<Employee> = req.body;
-      const newEmployee = await this.empService.createEmployee(employeeData);
+      const newEmployee = await empService.createEmployee(employeeData);
       res.status(201).json(newEmployee);
 
     } catch (error) {
@@ -27,27 +26,54 @@ export class EmployeeController {
     }
   }
 
-  // Updated controller methods to use the service
-async getAllEmployees(req: Request, res: Response) {
+
+  export const getAllEmployees=async(req: Request, res: Response)=> {
     try {
-      const filters = req.query; // e.g., ?department=HR
-      const employees = await this.empService.getAllEmployees(filters);
+      const filters = req.query; 
+      const employees = await empService.getAllEmployees(filters);
       res.status(200).json(employees);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch employees" });
     }
   }
   
-  async getEmployeeById(req: Request, res: Response) {
+  export const getEmployeeById=async(req: Request, res: Response) =>{
     try {
       const id = parseInt(req.params.id);
-      const employee = await this.empService.getEmployeeById(id);
+      console.log(id);
+      const employee = await empService.getEmployeeById(Number(id));
+      console.log(id);
+      console.log(employee);
       if (!employee) {
         return res.status(404).json({ error: "Employee not found" });
       }
       res.status(200).json(employee);
     } catch (error) {
+      console.error(error);
       res.status(500).json({ error: "Failed to fetch employee" });
     }
   }
-}
+
+  export const editEmpPassword=async(req: Request, res: Response)=> {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const { newPassword } = req.body;
+      console.log(id);
+      console.log(newPassword);
+  
+      if (!newPassword || Number.isNaN(id)) {
+        return res.status(400).json({ error: "Employee ID and newPassword are required" });
+      }
+  
+      const updated = await empService.updateEmployeePassword(id, newPassword);
+      if (!updated) {
+        return res.status(404).json({ error: "Employee not found" });
+      }
+  
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (err) {
+      console.error("Error updating password:", err);
+      res.status(500).json({ error: "Failed to update password" });
+    }
+  }
+  

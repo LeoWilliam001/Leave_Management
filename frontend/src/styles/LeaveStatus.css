@@ -1,0 +1,138 @@
+/* Wrapper for the entire dashboard */
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: row;
+    background-color: #F5F5F5; 
+    min-height: 100vh;
+  }
+  
+  /* Static Sidebar */
+  .dashboard-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #009688; /* Primary color */
+    color: #ffffff; /* Text color */
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #ffffff;
+  }
+  
+  .sidebar-link {
+    text-decoration: none;
+    color: #ffffff;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    padding: 10px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+
+  .status-button button{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: aqua;
+    border-radius: 12px;
+  }
+  
+  .status-button button:hover{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgb(53, 159, 220);
+    border-radius: 12px;
+  }
+
+  .sidebar-link:hover {
+    background-color: #00796B; /* Darker primary color */
+  }
+  
+  .cancel-button{
+    background-color: #e53935;
+    color: white;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  /* Main content area */
+  .dashboard-main {
+    position: absolute;
+    top: 0;
+    left: 270px; /* Matches the width of the fixed sidebar */
+    right: 0; /* Ensures it stretches to the right edge */
+    bottom: 0; /* Ensures it stretches to the bottom edge */
+    padding: 20px;
+    background-color: #ffffff; /* White background for content */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow-y: scroll; /* Allows scrolling if content overflows */
+  }
+  
+  .dashboard-main h2 {
+    color: #00796b; /* Accent color */
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .leave-status-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .leave-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #ffffff; /* White background for cards */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .leave-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .leave-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.5rem;
+    color: #00796b; /* Accent color */
+  }
+  
+  .leave-card p {
+    margin: 4px 0;
+    font-size: 1rem;
+    color: #37474f; /* Text color */
+  }
+  
+  .leave-card p strong {
+    color: #263238; /* Darker text color for labels */
+  }
+  
+  .error-message {
+    color: #e53935; /* Error color */
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .leave-status{
+    text-align: right;
+  }
