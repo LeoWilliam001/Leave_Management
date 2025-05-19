@@ -37,7 +37,7 @@ export const getLeaveRequestById = async (req: Request, res: Response) => {
     res.status(200).json(leaveRequest);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to fetch leave request" });
+    res.status(500).json({ message: "Fail request" });
   }
 };
 
@@ -135,6 +135,34 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
     ) {
       console.log("Inside third approval");
       leaveRequest.status = LeaveStatus.Approved;
+
+      const leaveBalRepo=AppDataSource.getRepository("LeaveBalance");
+      const leaveBal=await leaveBalRepo.findOne({
+        where:{
+          emp_id:leaveRequest.emp_id,
+          leave_type_id:leaveRequest.leave_type,
+        }
+      });
+
+      console.log("Employee id: "+leaveRequest.emp_id);
+      console.log("Levae Typr id : "+leaveRequest.leave_type);
+      console.log(leaveBal);
+
+      if (!leaveBal) {
+        return res.status(404).json({ message: "Leave balance not found for employee" });
+      }
+    
+      if (leaveBal.bal_days < leaveRequest.num_days) {
+        return res.status(400).json({ message: "Insufficient leave balance" });
+      }
+    
+      leaveBal.bal_days -= leaveRequest.num_days;
+      await leaveBalRepo.save(leaveBal);
+    }
+
+    else if((leaveRequest.manager_approval === ApprovalStatus.Rejected)||(leaveRequest.hr_approval === ApprovalStatus.Rejected))
+    {
+      leaveRequest.status = LeaveStatus.Rejected;
     }
 
     const updatedLeaveRequest = await leaveRequestRepo.save(leaveRequest);
@@ -145,13 +173,13 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
   }
 };
 
-// export const getHolidays = async (req: Request, res: Response) => {
-//   try {
-//     const holidays = await AppDataSource.getRepository(Holiday).find();
-//     console.log(holidays);
-//     res.status(200).json(holidays);
-//   } catch (error) {
-//     // console.error(error);
-//     res.status(500).json({ message: "Failed to fetch holidays" });
-//   }
-// };
+export const getHolidays = async (req: Request, res: Response) => {
+  try {
+    const holidays = await AppDataSource.getRepository(Holiday).find();
+    console.log(holidays);
+    res.status(200).json(holidays);
+  } catch (error) {
+    // console.error(error);
+    res.status(500).json({ message: "Failed to fetch holidays" });
+  }
+};

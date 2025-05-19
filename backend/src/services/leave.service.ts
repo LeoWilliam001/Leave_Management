@@ -26,7 +26,7 @@ export class LeaveService {
       data.hr_approval = ApprovalStatus.Pending;
     }
     if (employee.dir_id !== null) {
-      data.dir_approval = ApprovalStatus.Pending;
+      data.dir_approval = ApprovalStatus.NotRequired;
     }
 
     const leaveRequest = this.leaveRequestRepo.create(data);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./EmpSideBar"; // Import the shared Sidebar component
 import "../../styles/EmpDash.css";
 
@@ -6,10 +6,28 @@ const ApplyLeave: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
+  const [holidays, setHolidays] = useState<string[]>([]);
   const [leaveType, setLeaveType] = useState<number>(0);
   const [error, setError] = useState("");
   const emp_id = localStorage.getItem("emp_id");
 
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/leave/emp/holidays");
+        const data = await response.json();
+  
+        // Extract only dates in 'YYYY-MM-DD' format
+        const holidayDates = data.map((h: any) => h.date);
+        setHolidays(holidayDates);
+      } catch (err) {
+        console.error("Failed to fetch holidays", err);
+      }
+    };
+  
+    fetchHolidays();
+  }, []);
+  
   const handleLeave = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -35,13 +53,15 @@ const ApplyLeave: React.FC = () => {
         1;
 
       // Function to calculate weekends
-      const calculateWeekends = (start: string, end: string) => {
+      const calculateWeekends = (start: string, end: string,holidays: string[]) => {
         let weekendCount = 0;
         let currentDate = new Date(start);
-
+        console.log(holidays);
         while (currentDate <= new Date(end)) {
           const day = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
-          if (day === 0 || day === 6) {
+          const daystr= currentDate.toISOString().split("T")[0];
+          console.log(daystr);
+          if (day === 0 || day === 6 || holidays.includes(daystr)) {
             weekendCount++;
           }
           currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
@@ -51,7 +71,7 @@ const ApplyLeave: React.FC = () => {
       };
 
       // Calculate weekends
-      const weekends = calculateWeekends(startDate, endDate);
+      const weekends = calculateWeekends(startDate, endDate, holidays);
 
       // Calculate working days
       const workingDays = totalDays - weekends;

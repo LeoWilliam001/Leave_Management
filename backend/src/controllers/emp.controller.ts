@@ -54,26 +54,33 @@ import { Employee } from '../entities/Employee.entity';
     }
   }
 
-  export const editEmpPassword=async(req: Request, res: Response)=> {
+  export const editEmpPassword = async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id, 10);
-      const { newPassword } = req.body;
-      console.log(id);
-      console.log(newPassword);
+      const { existingPassword, newPassword } = req.body;
   
-      if (!newPassword || Number.isNaN(id)) {
-        return res.status(400).json({ error: "Employee ID and newPassword are required" });
+      if (!existingPassword || !newPassword || isNaN(id)) {
+        return res.status(400).json({ error: "Both existing and new passwords are required." });
+      }
+  
+      const employee = await empService.getEmployeeById(id); // You’ll add this
+      if (!employee) {
+        return res.status(404).json({ error: "Employee not found." });
+      }
+  
+      if (employee.password !== existingPassword) {
+        return res.status(401).json({ error: "Existing password is incorrect." });
       }
   
       const updated = await empService.updateEmployeePassword(id, newPassword);
       if (!updated) {
-        return res.status(404).json({ error: "Employee not found" });
+        return res.status(500).json({ error: "Failed to update password." });
       }
   
-      res.status(200).json({ message: "Password updated successfully" });
+      res.status(200).json({ message: "Password updated successfully." });
     } catch (err) {
       console.error("Error updating password:", err);
-      res.status(500).json({ error: "Failed to update password" });
+      res.status(500).json({ error: "Internal server error." });
     }
-  }
+  };
   

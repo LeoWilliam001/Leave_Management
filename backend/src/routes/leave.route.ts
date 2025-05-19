@@ -8,6 +8,7 @@ import {
   getLeaveRequestsByHR,
   getLeaveRequestByEmpId,
   getLeaveRequestsByManager,
+  getHolidays,
 } from "../controllers/leave.controller";
 
 const router = Router();
@@ -15,6 +16,8 @@ const router = Router();
 router.post("/", createLeaveRequest);
 
 router.get("/", getAllLeaveRequests);
+
+router.get("/emp/holidays", getHolidays);
 
 router.get("/:id", getLeaveRequestById);
 
@@ -26,6 +29,5 @@ router.get("/hr/:hr_id", getLeaveRequestsByHR);
 
 router.patch("/approve/:id", approveLeaveRequest);
 
-// router.get("/holidays", getHolidays);
 
 export default router;

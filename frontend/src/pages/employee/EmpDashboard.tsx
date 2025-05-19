@@ -5,6 +5,7 @@ import Sidebar from "./EmpSideBar";
 const EmployeeDashboard: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const[showPassword, setShowPassword]=useState(false);
+  const [existingPassword, setExistingPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const role = localStorage.getItem("role");
   const name = localStorage.getItem("name");
@@ -16,14 +17,15 @@ const EmployeeDashboard: React.FC = () => {
       const response = await fetch(`http://localhost:3000/api/users/editPass/${emp_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify({ existingPassword, newPassword }),
       });
-
+  
       const data = await response.json();
       if (response.ok) {
         alert("Password updated successfully");
         setShowModal(false);
         setNewPassword("");
+        setExistingPassword("");
       } else {
         alert("Error: " + data.error);
       }
@@ -53,10 +55,20 @@ const EmployeeDashboard: React.FC = () => {
             <div className="password-input-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
+                placeholder="Enter existing password"
+                value={existingPassword}
+                onChange={(e) => setExistingPassword(e.target.value)}
+              />
+            </div>
+
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
+              
               <button
                 className="toggle-password"
                 onClick={() => setShowPassword(!showPassword)}

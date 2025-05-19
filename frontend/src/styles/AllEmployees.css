@@ -6,7 +6,7 @@
   }
   
   .dashboard-main {
-    margin-left: 270px;
+    /* margin-left: 270px; */
     flex: 1;
     padding: 20px;
     background-color: #ffffff;
