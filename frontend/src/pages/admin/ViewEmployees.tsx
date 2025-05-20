@@ -35,7 +35,7 @@ interface Employee {
 const AllEmployees: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [error, setError] = useState("");
-  let dat;
+
 
   useEffect(() => {
     const fetchAllEmployees = async () => {
@@ -48,7 +48,6 @@ const AllEmployees: React.FC = () => {
         }
 
         setEmployees(data);
-        dat=data;
       } catch (err: any) {
         setError(err.message);
       }

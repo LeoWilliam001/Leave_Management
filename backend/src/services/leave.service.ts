@@ -71,7 +71,7 @@ export class LeaveService {
     const employeeIds = employees.map((emp) => emp.emp_id);
 
     return await this.leaveRequestRepo.find({
-      where: { emp_id: In(employeeIds) },
+      where: { emp_id: In(employeeIds), manager_approval: In([ApprovalStatus.Pending]) },
       relations: ["employee", "leaveType"],
     });
   }

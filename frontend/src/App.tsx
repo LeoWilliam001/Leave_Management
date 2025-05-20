@@ -9,6 +9,7 @@ import LeaveRequest from "./pages/leave/LeaveRequest";
 import HRLeaveRequests from "./pages/hr/HRLeaveRequest";
 import LeaveStatus from "./pages/employee/LeaveStatus";
 import AllEmployees from "./pages/admin/ViewEmployees";
+import CreateEmp from "./pages/admin/CreateEmployee";
 
 const App: React.FC = () => {
   return (
@@ -70,6 +71,14 @@ const App: React.FC = () => {
           element={
             <PrivateRoute allowedRoles={[1,2,6]}>
               <AllEmployees/>
+            </PrivateRoute>
+          }
+        />
+
+      <Route path="/hr/createemployees"
+          element={
+            <PrivateRoute allowedRoles={[1,2,6]}>
+              <CreateEmp/>
             </PrivateRoute>
           }
         />

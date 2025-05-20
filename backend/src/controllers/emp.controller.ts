@@ -9,7 +9,8 @@ import { Employee } from '../entities/Employee.entity';
     try {
       // 1. Check if the requesting user is HR
       const requestingUser = req.emp; 
-      if (requestingUser.role !== 2) {
+      console.log("User requested : "+JSON.stringify(requestingUser));
+      if (requestingUser.role !== 2 && requestingUser.role!==6) {
         return res.status(403).json({ error: "Only HR can create employees" });
       }
 

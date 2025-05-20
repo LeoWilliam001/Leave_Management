@@ -46,6 +46,8 @@ const EmployeeDashboard: React.FC = () => {
           <p><strong>Role:</strong> {role}</p>
           <p><strong>Employee ID:</strong> {emp}</p>
         </div>
+        <h2>Team Members in leave</h2>
+        
 
         {showModal && (
         <div className="modal-overlay">
