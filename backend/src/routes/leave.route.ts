@@ -9,6 +9,8 @@ import {
   getLeaveRequestByEmpId,
   getLeaveRequestsByManager,
   getHolidays,
+  setCancelled,
+  ViewTeamLeave,
 } from "../controllers/leave.controller";
 
 const router = Router();
@@ -29,5 +31,8 @@ router.get("/hr/:hr_id", getLeaveRequestsByHR);
 
 router.patch("/approve/:id", approveLeaveRequest);
 
+router.patch("/request/cancel/:id",setCancelled);
+
+router.get("/myteamleave/:id",ViewTeamLeave);
 
 export default router;

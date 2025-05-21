@@ -1,8 +1,6 @@
 * {
-    margin: 0.8em;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  box-sizing: border-box;
+}
   
   body {
     background-color: #F5F5F5; /* Background */
@@ -22,7 +20,7 @@
   
   .dashboard-wrapper {
     display: flex;
-    height: 96vh;
+    height: 7vh;
     background-color: #F5F5F5; /* Background color */
   }
   
@@ -32,7 +30,7 @@
     background-color: #009688; /* Primary color */
     margin: 0.8em;;
     color: #ffffff; /* Text color */
-    padding: 30px 20px;
+    /* padding: 30px 20px; */
     display: absolute;
     flex-direction: column;
     border-radius: 8px;
@@ -73,16 +71,16 @@
   
   .dashboard-main {
     flex: 1;
-    padding: 40px;
+    padding: 0px;
     background-color: #ffffff; /* White background for content */
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-left: 20px; /* Space between sidebar and content */
+    margin-left: 0px; /* Space between sidebar and content */
   }
   
   .dashboard-heading {
     font-size: 2rem;
-    margin-bottom: 30px;
+    margin-bottom: 0px;
     color: #009688; /* Primary color */
   }
   
@@ -186,5 +184,33 @@
     background-color: #C62828;
     color: white;
     border-radius: 5px;
+  }
+
+  .team-leave-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .team-leave-table th,
+  .team-leave-table td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    text-align: left;
+  }
+  
+  .leave-balance-cards {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  
+  .leave-card {
+    background-color: #f4f4f4;
+    padding: 1rem;
+    border-radius: 8px;
+    min-width: 200px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
   

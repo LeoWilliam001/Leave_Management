@@ -38,4 +38,24 @@ export class EmpService {
     return true;
   }
   
+
+  async editEmpData(id: number, updateData: Partial<Employee>): Promise<Employee | null> {
+    const employee = await this.employeeRepo.findOne({ where: { emp_id: id } });
+    if (!employee) return null;
+  
+    Object.assign(employee, updateData);
+    return await this.employeeRepo.save(employee);
+  }
+
+  async getRoleNameByEmpId(empId: number) {
+    const empRepo = AppDataSource.getRepository(Employee);
+    const employee = await empRepo.findOne({
+      where: { emp_id: empId },
+      relations: ["role"],
+    });
+
+    if (!employee) throw new Error("Employee not found");
+    return employee.role.role_name;
+  }
+
 }

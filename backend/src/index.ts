@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { AppDataSource } from "./data-source";
 import dotenv from 'dotenv';
 import express from 'express';
+import balRoutes from './routes/bal.route'
 import empRoutes from './routes/emp.route';
 import testTokenRoutes from './routes/test-token.route';
 import authRoutes from './routes/auth.route'
@@ -22,6 +23,7 @@ app.use('/api/users', empRoutes);
 app.use('/api/test', testTokenRoutes);
 app.use("/api/auth", authRoutes);
 app.use('/api/leave',leaveRoutes);
+app.use('/api/bal', balRoutes);
 
 AppDataSource.initialize()
   .then(() => {

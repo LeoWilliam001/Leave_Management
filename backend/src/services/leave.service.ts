@@ -85,18 +85,62 @@ export class LeaveService {
     if (!employees.length) {
       return [];
     }
-  
-    // Extract employee IDs
+
     const employeeIds = employees.map((emp) => emp.emp_id);
   
-    // Fetch leave requests where manager approval is either Approved or NotRequired
     return await this.leaveRequestRepo.find({
       where: {
         emp_id: In(employeeIds),
         manager_approval: In([ApprovalStatus.Approved, ApprovalStatus.NotRequired]), 
-        hr_approval: In([ApprovalStatus.Pending])// Add condition for manager approval
+        hr_approval: In([ApprovalStatus.Pending])
       },
       relations: ["employee", "leaveType"],
     });
+  }
+
+
+  async getTeamLeaveById(id: number) {
+    const employeeRepo = AppDataSource.getRepository(Employee);
+    const leaveRepo = AppDataSource.getRepository(LeaveRequest);
+  
+    // Step 1: Check if this employee has a manager
+    let man_id=null;
+    const employee=await employeeRepo.findOne({where: {emp_id:id}});
+    if(employee && employee.manager_id!=null)
+    {
+      man_id=employee.manager_id;
+    }
+  
+    // Step 2: Find team members with this employee as their manager
+    let teamMembers;
+    if(man_id!=null )
+    {
+      console.log("Inside if, so manager is null");
+      teamMembers = await employeeRepo.find({
+      where: [{ manager_id: In([id,man_id])}, {emp_id: id}]
+    });}
+    else{
+      console.log("Inside else");
+        teamMembers = await employeeRepo.find({
+        where: [{ manager_id: In([id])}, {emp_id: id}]
+      });
+    }
+
+    if (!teamMembers.length) {
+      return [];
+    }
+  
+    const memberIds = teamMembers.map(member => member.emp_id);
+    console.log(memberIds);
+    const today=new Date();
+    const leaveRequests = await leaveRepo.createQueryBuilder("leave")
+    .where("leave.emp_id IN (:...memberIds)", { memberIds })
+    .andWhere(":today BETWEEN leave.start_date AND leave.end_date", { today })
+    .leftJoinAndSelect("leave.employee", "employee") 
+    .getMany();
+
+    console.log(leaveRequests);
+  
+    return leaveRequests;
   }
 }

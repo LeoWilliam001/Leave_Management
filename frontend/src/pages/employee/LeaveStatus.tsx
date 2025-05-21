@@ -49,6 +49,28 @@ const LeaveStatus: React.FC = () => {
       ? leaveRequests
       : leaveRequests.filter((req) => req.status === filterStatus);
 
+  const handleCancel=async(lr_id: number)=> {
+    try{
+      const response=await fetch(`http://localhost:3000/api/leave/request/cancel/${lr_id}`,{
+        method:"PATCH",
+        headers:{
+          "Content-Type": "application/json",
+        }
+      });
+      if(response.status==200)
+      {
+        console.log(response);
+        alert("Leave request cancelled successfully");
+      }
+      else{
+        alert("Your leave Request cannot be cancelled for several reasons");
+      }
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
+
   return (
     <div className="dashboard-wrapper">
       <Sidebar />
@@ -94,7 +116,7 @@ const LeaveStatus: React.FC = () => {
               <p>
                 <strong>Status:</strong> {request.status}
               </p>
-              <button className="cancel-button">Cancel</button>
+              <button className="cancel-button" onClick={()=>handleCancel(request.lr_id)}>Cancel</button>
             </div>
           ))}
         </div>

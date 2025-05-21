@@ -85,3 +85,42 @@ import { Employee } from '../entities/Employee.entity';
     }
   };
   
+
+  export const editEmpData = async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const updateData: Partial<Employee> = req.body;
+  
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid employee ID" });
+      }
+  
+      const existingEmployee = await empService.getEmployeeById(id);
+      if (!existingEmployee) {
+        return res.status(404).json({ error: "Employee not found" });
+      }
+  
+      const updatedEmployee = await empService.editEmpData(id, updateData);
+      if (!updatedEmployee) {
+        return res.status(500).json({ error: "Failed to update employee" });
+      }
+  
+      res.status(200).json(updatedEmployee);
+    } catch (error) {
+      console.error("Error patching employee:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
+  
+  export const getRole = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const roleName = await empService.getRoleNameByEmpId(Number(id));
+      res.json({ role: roleName });
+    } catch (err) {
+      console.error(err);
+      res.status(400).json({ message: err instanceof Error ? err.message : err });
+    }
+  };
+
+  

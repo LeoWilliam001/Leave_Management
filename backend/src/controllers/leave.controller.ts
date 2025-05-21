@@ -112,7 +112,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
     // Check if the approver is the HR
     else if (Number(approver_id) === Number(employee.hr_id)) {
       console.log("Inside second approval");
-      if(leaveRequest.manager_approval !== ApprovalStatus.Approved)
+      if(leaveRequest.manager_approval !== ApprovalStatus.Approved && leaveRequest.manager_approval !== ApprovalStatus.NotRequired) 
       {
         console.log("Manager did not approve this request yet");
         return res.status(400).json({ message: "Manager did not approve this request yet" });
@@ -129,7 +129,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
 
     // Update the overall status if all approvals are completed
     if (
-      leaveRequest.manager_approval === ApprovalStatus.Approved &&
+      (leaveRequest.manager_approval === ApprovalStatus.Approved || leaveRequest.manager_approval === ApprovalStatus.NotRequired)&&
       (leaveRequest.hr_approval === ApprovalStatus.Approved || leaveRequest.hr_approval === ApprovalStatus.NotRequired) &&
       (leaveRequest.dir_approval === ApprovalStatus.Approved || leaveRequest.dir_approval === ApprovalStatus.NotRequired)
     ) {
@@ -145,7 +145,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
       });
 
       console.log("Employee id: "+leaveRequest.emp_id);
-      console.log("Levae Typr id : "+leaveRequest.leave_type);
+      console.log("Levae Type id : "+leaveRequest.leave_type);
       console.log(leaveBal);
 
       if (!leaveBal) {
@@ -179,7 +179,52 @@ export const getHolidays = async (req: Request, res: Response) => {
     console.log(holidays);
     res.status(200).json(holidays);
   } catch (error) {
-    // console.error(error);
     res.status(500).json({ message: "Failed to fetch holidays" });
   }
 };
+
+
+
+export const setCancelled=async(req:Request,res:Response)=>
+{
+    try{
+      const id=parseInt(req.params.id,10);
+      if(isNaN(id))
+      {
+        return res.status(400).json({error:"Invalid ID"});
+      }
+      const lr_repo=AppDataSource.getRepository(LeaveRequest);
+      const lr=await lr_repo.findOne({
+        where:{lr_id:id}
+      });
+      if(lr.status===LeaveStatus.Pending || (lr.status===LeaveStatus.Approved && new Date(lr.start_date)>new Date()))
+      {
+        console.log("This is correct");
+        lr.status=LeaveStatus.Cancelled;
+        const updatedStats=await lr_repo.save(lr);
+        res.status(200).json(updatedStats);
+      }
+      else{
+        return res.status(400).json({error: "You can cancel only if the starting date has not yet started"});
+      }
+    }
+    catch(error)
+    {
+      console.error(error);
+      res.status(500).json({error:"Internal server error"});
+    }
+}
+
+
+export const ViewTeamLeave=async(req:Request,res:Response)=>{
+  try{
+    const {id} = req.params;
+    const teamLeaves=await leaveService.getTeamLeaveById(Number(id));
+    res.status(200).json(teamLeaves);
+  }
+  catch(err)
+  {
+    console.error(err);
+    res.status(400).json({error:"Error in viewing team leaves"});
+  }
+}
