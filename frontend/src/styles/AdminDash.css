@@ -147,7 +147,7 @@ body {
 
 .toggle-password {
   padding: 6px 10px;
-  background-color: #009688;
+  background-color: #3498db;
   color: white;
   border: none;
   border-radius: 5px;
@@ -156,7 +156,7 @@ body {
 
 .set-pass {
   padding: 7px 12px 5px 12px;
-  background-color: #009688;
+  background-color: #3498db;
   color: white;
   border-radius: 5px;
 }

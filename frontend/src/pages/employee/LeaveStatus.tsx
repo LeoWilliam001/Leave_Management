@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "./EmpSideBar"; // Import the shared Sidebar component
-import "../../styles/LeaveStatus.css"; // Import the updated CSS
+import Sidebar from "./EmpSideBar"; 
+import "../../styles/LeaveStatus.css";
 
 interface LeaveRequest {
   lr_id: number;
@@ -77,46 +77,45 @@ const LeaveStatus: React.FC = () => {
       <main className="dashboard-main">
         <h2>Leave Status</h2>
         {error && <p className="error-message">{error}</p>}
-
+  
         <div className="status-button">
           <button onClick={() => handleFilterChange("All")}>All</button>
           <button onClick={() => handleFilterChange("Pending")}>Pending</button>
           <button onClick={() => handleFilterChange("Approved")}>Approved</button>
           <button onClick={() => handleFilterChange("Rejected")}>Rejected</button>
         </div>
-
+  
         <div className="leave-status-container">
           {filteredRequests.map((request) => (
             <div key={request.lr_id} className="leave-card">
-              <div>
-                <h3>Leave Request #{request.lr_id}</h3>
-                <h3 className="leave-status">{request.status}</h3>
+              <div className="leave-card-header">
+                <h3>Request #{request.lr_id}</h3>
+                <span 
+                  className={`leave-status ${request.status.replace(/\s+/g, '')}`}
+                >
+                  {request.status}
+                </span>
               </div>
               <p>
-                <strong>Leave Type:</strong> {request.leave_type}
+                <strong>Type:</strong> 
+                <span>{request.leave_type}</span>
               </p>
               <p>
-                <strong>Start Date:</strong> {request.start_date}
+                <strong>Dates:</strong> 
+                <span>{request.start_date} to {request.end_date}</span>
               </p>
               <p>
-                <strong>End Date:</strong> {request.end_date}
+                <strong>Reason:</strong> 
+                <span className="truncate">{request.reason}</span>
               </p>
-              <p>
-                <strong>Reason:</strong> {request.reason}
-              </p>
-              <p>
-                <strong>Manager Approval:</strong> {request.manager_approval}
-              </p>
-              <p>
-                <strong>HR Approval:</strong> {request.hr_approval}
-              </p>
-              <p>
-                <strong>Director Approval:</strong> {request.dir_approval}
-              </p>
-              <p>
-                <strong>Status:</strong> {request.status}
-              </p>
-              <button className="cancel-button" onClick={()=>handleCancel(request.lr_id)}>Cancel</button>
+              {request.status !== "Cancelled" && (
+                <button 
+                  className="cancelbutton" 
+                  onClick={() => handleCancel(request.lr_id)}
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           ))}
         </div>

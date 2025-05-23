@@ -1,5 +1,7 @@
 * {
   box-sizing: border-box;
+  padding: 0%;
+  margin: 0%;
 }
   
   body {
@@ -13,7 +15,7 @@
     border-radius: 8px;
     display: flex;
     border: 1.5px solid black;
-    background-color: #009688;
+    background-color: #3498db;
     color: white;
     margin-left: auto; 
   }
@@ -27,7 +29,7 @@
   .dashboard-sidebar {
     width: 250px;
     max-height: 96vh;
-    background-color: #009688; /* Primary color */
+    background-color: #36A2EB; /* Primary color */
     margin: 0.8em;;
     color: #ffffff; /* Text color */
     /* padding: 30px 20px; */
@@ -54,6 +56,11 @@
     transition: background-color 0.3s ease;
   }
 
+  .sidebar-link.active {
+    background-color: #3498db;
+    /* color: #1e293b;  */
+    font-weight: bold;
+  }
 
   .logout-sidebar-link {
     text-decoration: none;
@@ -81,7 +88,7 @@
   .dashboard-heading {
     font-size: 2rem;
     margin-bottom: 0px;
-    color: #009688; /* Primary color */
+    color: #258acd; /* Primary color */
   }
   
   .employee-details p {
@@ -121,8 +128,6 @@
 
   .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
@@ -134,14 +139,18 @@
   
   .modal-content {
     background-color: white;
-    padding: 30px;
+    padding: 15px;
     border-radius: 12px;
-    width: 350px;
+    width: 370px;
+    height: 500px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    align-items: flex-start;
+    justify-content: center;
   }
+
+
+
   
   .modal-buttons {
     display: flex;
@@ -165,7 +174,7 @@
   
   .toggle-password {
     padding: 6px 10px;
-    background-color: #009688;
+    background-color: #3498db;
     color: white;
     border: none;
     border-radius: 5px;
@@ -174,7 +183,7 @@
 
   .set-pass{
     padding: 7px 12px 5px 12px;
-    background-color: #009688;
+    background-color: #258acd;
     color: white;
     border-radius: 5px;
   }
@@ -200,6 +209,7 @@
   }
   
   .leave-balance-cards {
+    margin-left: 40px;
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
@@ -213,4 +223,126 @@
     min-width: 200px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
+
+
+  .leave-form {
+    background-color: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+    width: 100%;
+    /* height:100%; */
+    /* max-width: 700px; */
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    /* display: flex; */
+    flex-direction: column;
+    gap: 10px;
+
+  }
   
+  .leave-form h2 {
+    text-align: center;
+    color: #333;
+    /* margin-bottom: 20px; */
+  }
+  
+  .leave-form .form-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .leave-form label {
+    width: 150px;
+    font-weight: 600;
+    color: #444;
+  }
+  
+  .leave-form input,
+  .leave-form select,
+  .leave-form textarea {
+    flex: 1;
+    /* padding: 10px 12px; */
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100px;
+    transition: border-color 0.3s;
+  }
+  
+  .leave-form textarea {
+    width: 1000px;
+    min-height: 3px;
+    resize: horizontal;
+  }
+  
+  .leave-form input:focus,
+  .leave-form select:focus,
+  .leave-form textarea:focus {
+    border-color: #258acd;
+    outline: none;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .set-pass,
+  .cancel-pass {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+  }
+  
+
+  
+  .set-pass:hover {
+    background-color: #3498db;
+  }
+  
+  .cancel-pass {
+    background-color: #f00000;
+    color: white;
+  }
+  
+  .cancel-pass:hover {
+    background-color: #b40505;
+  }
+  
+  .modaloverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: grid;
+    place-items: center;
+    z-index: 100;
+  }
+  
+  .pass-modal {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .pass-modal h2 {
+    margin: 0 0 1.5rem;
+    text-align: center;
+    color: #333;
+  }

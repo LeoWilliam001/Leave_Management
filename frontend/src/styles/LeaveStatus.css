@@ -1,138 +1,220 @@
 /* Wrapper for the entire dashboard */
 .dashboard-wrapper {
-    display: flex;
-    flex-direction: row;
-    background-color: #F5F5F5; 
-    min-height: 100vh;
-  }
-  
-  /* Static Sidebar */
-  .dashboard-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 100vh;
-    background-color: #009688; /* Primary color */
-    color: #ffffff; /* Text color */
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .sidebar-title {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #ffffff;
-  }
-  
-  .sidebar-link {
-    text-decoration: none;
-    color: #ffffff;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    padding: 10px;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-  }
+  display: flex;
+  flex-direction: row;
+  background-color: #F5F5F5;
+  min-height: 96vh;
+}
 
-  .status-button button{
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    background-color: #00796b;
-    border-radius: 12px;
-  }
-  
-  .status-button button:hover{
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    background-color: rgb(53, 159, 220);
-    border-radius: 12px;
-  }
+/* Static Sidebar */
+.dashboard-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #3498db;
+  color: #ffffff;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
 
-  .sidebar-link:hover {
-    background-color: #00796B; /* Darker primary color */
-  }
-  
-  .cancel-button{
-    background-color: #e53935;
-    color: white;
-    border-radius: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
-  /* Main content area */
+.sidebar-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.sidebar-link {
+  text-decoration: none;
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  padding: 10px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-link:hover {
+  background-color: #258acd;
+}
+
+/* Main content area */
+.dashboard-main {
+  position: absolute;
+  top: 0;
+  left: 270px;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: scroll;
+}
+
+.dashboard-main h2 {
+  color: #258acd;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.error-message {
+  color: #e53935;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Status filter buttons */
+.status-button {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.status-button button {
+  padding: 8px 16px;
+  background-color: #FF6384;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  min-width: 100px;
+  height: 40px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.status-button button:hover {
+  background-color: rgb(49, 152, 2);
+  transform: translateY(-2px);
+}
+
+/* Leave cards container */
+.leave-status-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Individual leave card */
+.leave-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 180px;
+}
+
+.leave-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.leave-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.leave-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #258acd;
+}
+
+.leave-card p {
+  margin: 6px 0;
+  font-size: 0.9rem;
+  color: #555;
+  display: flex;
+  justify-content: space-between;
+}
+
+.leave-card p strong {
+  color: #333;
+  margin-right: 8px;
+}
+
+/* Status badge */
+.leave-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: capitalize;
+}
+
+/* Status-specific colors */
+.leave-status.Approved {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+}
+
+.leave-status.Pending {
+  color: #f57f17;
+  background-color: #fff8e1;
+}
+
+.leave-status.Rejected {
+  color: #c62828;
+  background-color: #ffebee;
+}
+
+.leave-status.Cancelled {
+  color: #616161;
+  background-color: #f5f5f5;
+  text-decoration: line-through;
+}
+
+/* Cancel button */
+.cancelbutton {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background-color: #e53935;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #c62828;
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .dashboard-main {
-    position: absolute;
-    top: 0;
-    left: 270px; /* Matches the width of the fixed sidebar */
-    right: 0; /* Ensures it stretches to the right edge */
-    bottom: 0; /* Ensures it stretches to the bottom edge */
-    padding: 20px;
-    background-color: #ffffff; /* White background for content */
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    overflow-y: scroll; /* Allows scrolling if content overflows */
+    left: 0;
+    padding-top: 70px;
   }
   
-  .dashboard-main h2 {
-    color: #00796b; /* Accent color */
-    font-size: 2rem;
-    margin-bottom: 20px;
-    text-align: center;
+  .dashboard-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
   }
   
   .leave-status-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    grid-template-columns: 1fr;
   }
-  
-  .leave-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    background-color: #ffffff; /* White background for cards */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .leave-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .leave-card h3 {
-    margin: 0 0 8px;
-    font-size: 1.5rem;
-    color: #00796b; /* Accent color */
-  }
-  
-  .leave-card p {
-    margin: 4px 0;
-    font-size: 1rem;
-    color: #37474f; /* Text color */
-  }
-  
-  .leave-card p strong {
-    color: #263238; /* Darker text color for labels */
-  }
-  
-  .error-message {
-    color: #e53935; /* Error color */
-    font-size: 1.2rem;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .leave-status{
-    text-align: right;
-  }
+}

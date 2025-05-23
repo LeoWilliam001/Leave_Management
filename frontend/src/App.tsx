@@ -10,6 +10,8 @@ import HRLeaveRequests from "./pages/hr/HRLeaveRequest";
 import LeaveStatus from "./pages/employee/LeaveStatus";
 import AllEmployees from "./pages/admin/ViewEmployees";
 import CreateEmp from "./pages/admin/CreateEmployee";
+// import { Calendar } from "react-big-calendar";
+import EmployeeCalendar from "./pages/employee/EmployeeCalendar";
 
 const App: React.FC = () => {
   return (
@@ -37,8 +39,10 @@ const App: React.FC = () => {
 
         <Route path="/applyleave"
           element={
-            <PrivateRoute allowedRoles={[3,4]}>
-              <ApplyLeave />
+            <PrivateRoute allowedRoles={[2,3,4,6,5]}>
+              <ApplyLeave onClose={function (): void {
+                throw new Error("Function not implemented.");
+              } } />
             </PrivateRoute>
           }
         />
@@ -61,7 +65,7 @@ const App: React.FC = () => {
 
         <Route path="/myleavestatus"
           element={
-            <PrivateRoute allowedRoles={[3,4,5]}>
+            <PrivateRoute allowedRoles={[3,4,5,2,6]}>
               <LeaveStatus/>
             </PrivateRoute>
           }
@@ -82,6 +86,15 @@ const App: React.FC = () => {
             </PrivateRoute>
           }
         />
+
+      <Route path="/calendar"
+          element={
+            <PrivateRoute allowedRoles={[1,2,3,4,5,6]}>
+              <EmployeeCalendar/>
+            </PrivateRoute>
+          }
+        />
+
       </Routes>
 
     </Router>

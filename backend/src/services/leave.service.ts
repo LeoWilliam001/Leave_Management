@@ -3,6 +3,7 @@ import { LeaveRequest } from "../entities/LeaveRequest.entity";
 import { Employee } from "../entities/Employee.entity";
 import { ApprovalStatus } from "../entities/LeaveRequest.entity";
 import { In } from "typeorm"; // Import the In operator
+import { LeaveType } from "../entities/LeaveType.entity";
 
 export class LeaveService {
   private leaveRequestRepo = AppDataSource.getRepository(LeaveRequest);
@@ -25,8 +26,12 @@ export class LeaveService {
     if (employee.hr_id !== null) {
       data.hr_approval = ApprovalStatus.Pending;
     }
-    if (employee.dir_id !== null) {
+    if (employee.dir_id !== null && data.num_days<=4) {
       data.dir_approval = ApprovalStatus.NotRequired;
+    }
+    else if(employee.dir_id !== null && data.num_days>4)
+    {
+      data.dir_approval=ApprovalStatus.Pending;
     }
 
     const leaveRequest = this.leaveRequestRepo.create(data);
@@ -53,7 +58,7 @@ export class LeaveService {
     const leaveRequestRepo = AppDataSource.getRepository(LeaveRequest);
     return await leaveRequestRepo.find({
       where: { emp_id },
-      relations: ["employee"], 
+      relations: ["employee","leaveType"], 
     });
   };
 
@@ -72,6 +77,26 @@ export class LeaveService {
 
     return await this.leaveRequestRepo.find({
       where: { emp_id: In(employeeIds), manager_approval: In([ApprovalStatus.Pending]) },
+      relations: ["employee", "leaveType"],
+    });
+  }
+
+  async getLeaveRequestsByDirector(manager_id: number) {
+    const employees = await this.employeeRepo.find({
+      where: { dir_id:manager_id },
+    });
+
+    if (!employees.length) {
+      return [];
+    }
+
+    const employeeIds = employees.map((emp) => emp.emp_id);
+
+    return await this.leaveRequestRepo.find({
+      where: { emp_id: In(employeeIds), 
+        manager_approval: In([ApprovalStatus.Approved, ApprovalStatus.NotRequired]), 
+        hr_approval: In([ApprovalStatus.Approved, ApprovalStatus.NotRequired]),
+        dir_approval: In([ApprovalStatus.Pending]) },
       relations: ["employee", "leaveType"],
     });
   }
@@ -102,30 +127,30 @@ export class LeaveService {
   async getTeamLeaveById(id: number) {
     const employeeRepo = AppDataSource.getRepository(Employee);
     const leaveRepo = AppDataSource.getRepository(LeaveRequest);
+    const employee = await employeeRepo.findOne({ where: { emp_id: id } });
   
-    // Step 1: Check if this employee has a manager
-    let man_id=null;
-    const employee=await employeeRepo.findOne({where: {emp_id:id}});
-    if(employee && employee.manager_id!=null)
-    {
-      man_id=employee.manager_id;
-    }
+    const whereConditions = [];
   
-    // Step 2: Find team members with this employee as their manager
-    let teamMembers;
-    if(man_id!=null )
-    {
-      console.log("Inside if, so manager is null");
-      teamMembers = await employeeRepo.find({
-      where: [{ manager_id: In([id,man_id])}, {emp_id: id}]
-    });}
-    else{
-      console.log("Inside else");
-        teamMembers = await employeeRepo.find({
-        where: [{ manager_id: In([id])}, {emp_id: id}]
-      });
-    }
-
+    // Always include `id` in every `In` check
+    whereConditions.push({
+      manager_id: In(employee?.manager_id != null ? [id, employee.manager_id] : [id]),
+    });
+  
+    whereConditions.push({
+      hr_id: In(employee?.hr_id != null ? [id, employee.hr_id] : [id]),
+    });
+  
+    whereConditions.push({
+      dir_id: In(employee?.dir_id != null ? [id, employee.dir_id] : [id]),
+    });
+  
+    // Always include self by emp_id
+    whereConditions.push({ emp_id: id });
+  
+    const teamMembers = await employeeRepo.find({
+      where: whereConditions,
+    });
+  
     if (!teamMembers.length) {
       return [];
     }
@@ -143,4 +168,5 @@ export class LeaveService {
   
     return leaveRequests;
   }
+
 }

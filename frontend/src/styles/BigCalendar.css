@@ -1,0 +1,44 @@
+
+.calendar-container {
+    margin:20px;
+    margin-left: 290px;
+    /* margin: 2rem auto; */
+
+    padding: 1rem;
+    max-width: 100%;
+    max-height:100%;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow :hidden;
+  }
+  
+  /* Adjust header (Today, Back, Next, etc.) */
+  .rbc-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  @media (min-width: 600px) {
+    .rbc-toolbar {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+  
+  /* Style event items */
+  .rbc-event {
+    padding: 4px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+  
+  /* Improve agenda view spacing */
+  .rbc-agenda-content td {
+    padding: 8px 12px;
+  }
+  

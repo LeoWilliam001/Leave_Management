@@ -11,8 +11,11 @@ interface LeaveRequest {
   reason: string;
   status: string;
   manager_approval: string;
+  dir_approval: string;
   employee: {
     name: string;
+    manager_id: number;
+    dir_id: number;
   };
 }
 
@@ -24,22 +27,35 @@ const LeaveRequest: React.FC = () => {
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/leave/manager/${manager_id}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch leave requests");
+        const [managerRes, directorRes] = await Promise.all([
+          fetch(`http://localhost:3000/api/leave/manager/${manager_id}`),
+          fetch(`http://localhost:3000/api/leave/director/${manager_id}`)
+        ]);
+  
+        const [managerData, directorData] = await Promise.all([
+          managerRes.json(),
+          directorRes.json()
+        ]);
+  
+        if (!managerRes.ok || !directorRes.ok) {
+          throw new Error("Failed to fetch leave requests");
         }
-
-        setLeaveRequests(data);
+  
+        // Merge and remove duplicates if needed
+        const combined = [...managerData, ...directorData];
+        const uniqueRequests = Array.from(
+          new Map(combined.map(item => [item.lr_id, item])).values()
+        );
+  
+        setLeaveRequests(uniqueRequests);
       } catch (err: any) {
         setError(err.message);
       }
     };
-
+  
     fetchLeaveRequests();
   }, [manager_id]);
-
+  
   const handleApprove = async (lr_id: number, action: string) => {
     try {
       const response = await fetch(`http://localhost:3000/api/leave/approve/${lr_id}`, {
@@ -76,11 +92,11 @@ const LeaveRequest: React.FC = () => {
   return (
     <div className="dashboard-wrapper">
       <Sidebar /> 
-      <div className="leave-container">
+      <div className="leavecontainer">
         <h2>Manager Dashboard</h2>
         {error && <p style={{ color: "#D32F2F", textAlign: "center" }}>{error}</p>}
         <table className="leave-table">
-          <thead>
+          <thead >
             <tr>
               <th>Employee Name</th>
               <th>Leave Type</th>
@@ -101,24 +117,42 @@ const LeaveRequest: React.FC = () => {
                 <td>{request.reason}</td>
                 <td className="status">{request.status}</td>
                 <td>
-                  {request.manager_approval === "Pending" ? (
-                    <>
-                      <button
-                        onClick={() => handleApprove(request.lr_id, "approve")}
-                        className="approve-btn"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleApprove(request.lr_id, "reject")}
-                        className="reject-btn"
-                      >
-                        Reject
-                      </button>
-                    </>
-                  ) : (
-                    <span className="status">{request.manager_approval}</span>
-                  )}
+                {(request.manager_approval === "Pending" && request.employee.manager_id.toString() === manager_id) ? (
+                  <>
+                    <button
+                      onClick={() => handleApprove(request.lr_id, "approve")}
+                      className="approve-btn"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleApprove(request.lr_id, "reject")}
+                      className="reject-btn"
+                    >
+                      Reject
+                    </button>
+                  </>
+                ) : request.dir_approval === "Pending" && request.employee.dir_id.toString() === manager_id ? (
+                  <>
+                    <button
+                      onClick={() => handleApprove(request.lr_id, "approve")}
+                      className="approve-btn"
+                    >
+                      Approve (Dir)
+                    </button>
+                    <button
+                      onClick={() => handleApprove(request.lr_id, "reject")}
+                      className="reject-btn"
+                    >
+                      Reject (Dir)
+                    </button>
+                  </>
+                ) : (
+                  <span className="status">
+                    {request.employee.manager_id.toString() == manager_id ? request.manager_approval : request.dir_approval}
+                  </span>
+                )}
+
                 </td>
               </tr>
             ))}

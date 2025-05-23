@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "./EmpSideBar"; // Import the shared Sidebar component
 import "../../styles/EmpDash.css";
 
-const ApplyLeave: React.FC = () => {
+const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
@@ -49,8 +48,7 @@ const ApplyLeave: React.FC = () => {
 
       const totalDays =
         (new Date(endDate).getTime() - new Date(startDate).getTime()) /
-          (1000 * 60 * 60 * 24) +
-        1;
+          (1000 * 60 * 60 * 24) +1;
 
       // Function to calculate weekends
       const calculateWeekends = (start: string, end: string,holidays: string[]) => {
@@ -115,59 +113,42 @@ const ApplyLeave: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-wrapper">
-      <Sidebar />
-      <main className="dashboard-main">
-        <h1 className="dashboard-heading">Apply for Leave</h1>
-        <form onSubmit={handleLeave} className="leave-form">
-          <div className="form-group">
-            <label>Leave Type</label>
-            <select
-              value={leaveType}
-              onChange={(e) => setLeaveType(Number(e.target.value))}
-            >
-              <option value="">Select Leave Type</option>
-              <option value={1}>Sick Leave</option>
-              <option value={2}>Casual Leave</option>
-              <option value={3}>Earned Leave</option>
-            </select>
-          </div>
+  <form onSubmit={handleLeave} className="leave-form">
+  <h2>Apply for Leave</h2>
 
-          <div className="form-group">
-            <label>Start Date</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-          </div>
+  <div className="form-group">
+    <label>Leave Type</label>
+    <select value={leaveType} onChange={(e) => setLeaveType(Number(e.target.value))}>
+      <option value={0}>Select Type</option>
+      <option value={2}>Sick Leave</option>
+      <option value={1}>Casual Leave</option>
+      <option value={3}>Paid Leave</option>
+    </select>
+  </div>
 
-          <div className="form-group">
-            <label>End Date</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </div>
+  <div className="form-group">
+    <label>Start Date</label>
+    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+  </div>
 
-          <div className="form-group">
-            <label>Reason</label>
-            <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              rows={4}
-            />
-          </div>
+  <div className="form-group">
+    <label>End Date</label>
+    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+  </div>
 
-          {error && <p className="error-message">{error}</p>}
+  <div className="form-group">
+    <label>Reason</label>
+    <textarea value={reason} onChange={(e) => setReason(e.target.value)} />
+  </div>
 
-          <button type="submit" className="submit-button">
-            Submit
-          </button>
-        </form>
-      </main>
-    </div>
+  {error && <p className="error-message">{error}</p>}
+
+  <div className="modal-buttons">
+    <button type="submit" className="set-pass">Submit</button>
+    <button type="button" onClick={onClose} className="cancel-pass">Cancel</button>
+  </div>
+</form>
+
   );
 };
 

@@ -58,4 +58,28 @@ export class EmpService {
     return employee.role.role_name;
   }
 
+  async getReportees(empId: number)
+  {
+    const reportees = await this.employeeRepo.find({
+      where: [
+        { manager_id: empId },
+        { dir_id: empId }
+      ]
+    });
+
+    if(!reportees)
+      return null;
+    return reportees;
+  }
+
+  async isDirById(empId:number)
+  {
+    const reportees=await this.employeeRepo.find({
+      where:{dir_id:empId}
+    })
+    if(!reportees)
+      return null;
+    return reportees;
+  }
+
 }

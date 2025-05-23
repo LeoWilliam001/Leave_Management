@@ -64,6 +64,18 @@ export const getLeaveRequestsByManager = async (req: Request, res: Response) => 
     }
   };
 
+  export const getLeaveRequestsByDirector = async (req: Request, res: Response) => {
+    try {
+      const { manager_id } = req.params;
+      console.log(manager_id);
+      const leaveRequests = await leaveService.getLeaveRequestsByDirector(Number(manager_id));
+      res.status(200).json(leaveRequests);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Failed to fetch leave requests for manager" });
+    }
+  };
+
   // There is some errors here. fix it using postman
   export const getLeaveRequestsByHR = async (req: Request, res: Response) => {
     try {
@@ -122,6 +134,23 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
       }
       leaveRequest.hr_approval = action === "approve" ? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     } 
+
+    // Check if the approver is the Director
+    else if(Number(approver_id) === Number(employee.dir_id))
+    {
+      console.log("Inside third stage of approval");
+      if(leaveRequest.manager_approval!==ApprovalStatus.Approved && leaveRequest.manager_approval!==ApprovalStatus.NotRequired
+        && leaveRequest.hr_approval!==ApprovalStatus.Approved && leaveRequest.hr_approval!==ApprovalStatus.NotRequired)
+      {
+        console.log("Manager / HR did not approve this request yet");
+        return res.status(400).json({ message: "Manager / HR did not approve this request yet" });
+      }
+      else if(leaveRequest.dir_approval !== ApprovalStatus.Pending)
+      {
+        return res.status(400).json({message: "Director has already approved this request"});
+      }
+      leaveRequest.dir_approval=action==="approve"? ApprovalStatus.Approved : ApprovalStatus.Rejected;
+    }
     
     else {
       return res.status(403).json({ message: "You are not authorized to approve/reject this leave request" });
@@ -133,7 +162,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
       (leaveRequest.hr_approval === ApprovalStatus.Approved || leaveRequest.hr_approval === ApprovalStatus.NotRequired) &&
       (leaveRequest.dir_approval === ApprovalStatus.Approved || leaveRequest.dir_approval === ApprovalStatus.NotRequired)
     ) {
-      console.log("Inside third approval");
+      console.log("Inside final approval");
       leaveRequest.status = LeaveStatus.Approved;
 
       const leaveBalRepo=AppDataSource.getRepository("LeaveBalance");

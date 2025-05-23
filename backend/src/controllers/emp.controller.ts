@@ -123,4 +123,34 @@ import { Employee } from '../entities/Employee.entity';
     }
   };
 
+  export const getReportees = async (req: Request, res: Response) => {
+    const empId = parseInt(req.params.empId);
   
+    if (isNaN(empId)) {
+      return res.status(400).json({ message: "Invalid employee ID" });
+    }
+  
+    try {
+      const reportees = await empService.getReportees(empId);
+      res.status(200).json(reportees);
+    } catch (error) {
+      console.error("Error fetching reportees:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+
+  export const getisDir = async (req: Request, res: Response) => {
+    const empId = parseInt(req.params.empId);
+  
+    if (isNaN(empId)) {
+      return res.status(400).json({ message: "Invalid employee ID" });
+    }
+  
+    try {
+      const reportees = await empService.isDirById(empId);
+      res.status(200).json(reportees);
+    } catch (error) {
+      console.error("Error fetching reportees:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
