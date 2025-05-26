@@ -46,6 +46,7 @@ const CreateEmp: React.FC = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Error creating employee");
       alert("Employee created successfully!");
+
       navigate("/admin_dash");
     } catch (err: any) {
       alert("Failed: " + err.message);

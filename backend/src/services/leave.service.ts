@@ -1,7 +1,7 @@
 import { AppDataSource } from "../data-source";
 import { LeaveRequest } from "../entities/LeaveRequest.entity";
 import { Employee } from "../entities/Employee.entity";
-import { ApprovalStatus } from "../entities/LeaveRequest.entity";
+import { ApprovalStatus, LeaveStatus } from "../entities/LeaveRequest.entity";
 import { In } from "typeorm"; // Import the In operator
 import { LeaveType } from "../entities/LeaveType.entity";
 
@@ -167,6 +167,31 @@ export class LeaveService {
     console.log(leaveRequests);
   
     return leaveRequests;
+  }
+
+  async isClashing(id: number, sdate:Date, edate:Date)
+  {
+    const approvedLeaves=await this.leaveRequestRepo.find({where:{emp_id:id, status:LeaveStatus.Approved}});
+
+    if(approvedLeaves.length==0)
+    {
+      return 1;
+    }
+    console.log(approvedLeaves);
+    for(const leave of approvedLeaves)
+    {
+      const startDate=new Date(leave.start_date);
+      const endDate =new Date(leave.end_date);
+      console.log(startDate+":"+endDate);
+      console.log(new Date(sdate)+":"+new Date(edate));
+      const isOverlap= new Date(sdate)<=endDate && new Date(edate)>=startDate;
+      console.log("Is overlap : "+isOverlap);
+      if(isOverlap)
+      {
+        return 0;
+      }
+      return 1;
+    }
   }
 
 }

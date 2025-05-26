@@ -37,6 +37,17 @@ const EmployeeDashboard: React.FC = () => {
   const name = localStorage.getItem("name");
   const emp_id = localStorage.getItem("emp_id");
 
+  const TeamLeaveCard: React.FC<{ name: string }> = ({ name }) => {
+    const firstLetter = name ? name.charAt(0).toUpperCase() : '?';
+    
+    return (
+      <div className="team-leave-card">
+        <div className="employee-initial-circle">{firstLetter}</div>
+        <div className="employee-name">{name}</div>
+      </div>
+    );
+  };
+
   useEffect(() => {
     const fetchAllData = async () => {
       try {
@@ -126,42 +137,37 @@ const EmployeeDashboard: React.FC = () => {
           <p><strong>Age:</strong> {age}</p>
         </div>
 
-        {(employee)&&(employee.manager_id!=null || employee.hr_id!=null || employee.dir_id!=null) &&(<><h2>Your Leave Balances</h2>
-        <div className="leave-balance-cards" style={{ display: "flex", flexWrap: "wrap", gap: "2rem" }}>
-          {leaveBalances.map((bal: any) => (
-            <LeaveBalanceChart
-              key={bal.lb_id}
-              type={bal.leaveType?.type_of_leave}
-              total={bal.total_days}
-              balance={bal.bal_days}
-            />
-          ))}
-        </div></>)}
+        {(employee)&&(employee.manager_id!=null || employee.hr_id!=null || employee.dir_id!=null) &&(
+          <div className="leave-section-container">
+            <div className="leave-balances-section">
+              <h2>Your Leave Balances</h2>
+              <div className="leave-balance-cards" style={{ display: "flex", flexWrap: "wrap", gap: "2rem" }}>
+                {leaveBalances.map((bal: any) => (
+                  <LeaveBalanceChart
+                    key={bal.lb_id}
+                    type={bal.leaveType?.type_of_leave}
+                    total={bal.total_days}
+                    balance={bal.bal_days}
+                  />
+                ))}
+              </div>
+            </div>
 
-        <h2>Team Members in leave</h2>
-        {teamLeaveRequests.length > 0 ? (
-          <table className="team-leave-table">
-            <thead>
-              <tr>
-                <th>Employee Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teamLeaveRequests.map((req: any) => (
-                <tr key={req.lr_id}>
-                  <td>{req.employee?.name}</td>
-                  <td>{new Date(req.start_date).toLocaleDateString()}</td>
-                  <td>{new Date(req.end_date).toLocaleDateString()}</td>
-                  <td>{req.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No team members on leave today.</p>
+            <div className="team-leave-section">
+              <h2>On Leave Today</h2>
+              <div className="team-leave-container">
+                {teamLeaveRequests.length > 0 ? (
+                  <div className="team-leave-cards">
+                    {teamLeaveRequests.map((req: any) => (
+                      <TeamLeaveCard key={req.lr_id} name={req.employee?.name} />
+                    ))}
+                  </div>
+                ) : (
+                  <p>No team members on leave today.</p>
+                )}
+              </div>
+            </div>
+          </div>
         )}
 
         {showModal && (

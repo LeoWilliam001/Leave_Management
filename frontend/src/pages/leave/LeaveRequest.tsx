@@ -93,7 +93,7 @@ const LeaveRequest: React.FC = () => {
     <div className="dashboard-wrapper">
       <Sidebar /> 
       <div className="leavecontainer">
-        <h2>Manager Dashboard</h2>
+        <h2>Leave Requests</h2>
         {error && <p style={{ color: "#D32F2F", textAlign: "center" }}>{error}</p>}
         <table className="leave-table">
           <thead >

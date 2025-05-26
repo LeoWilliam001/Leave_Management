@@ -5,6 +5,7 @@ import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale";
 import "../../styles/BigCalendar.css";
 import Sidebar from "../employee/EmpSideBar";
+import AdminSide from "../admin/AdminSideBar";
 
 const locales = {
   "en-US": enUS,
@@ -29,11 +30,13 @@ const EmployeeCalendar: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState<Date>(new Date());
+  const role=localStorage.getItem('role');
+  const emp_id=localStorage.getItem('emp_id');
   
 
   useEffect(() => {
     const fetchData = async () => {
-      const leaveRes = await fetch("http://localhost:3000/api/leave/emp/4");
+      const leaveRes = await fetch(`http://localhost:3000/api/leave/emp/${emp_id}`);
       const allLeaves = await leaveRes.json();
       const approvedLeaves = allLeaves.filter((leave: any) => leave.status === "Approved");
   
@@ -82,7 +85,7 @@ const EmployeeCalendar: React.FC = () => {
               end: new Date(current),
               type: "leave",
             });
-          }
+          } 
           current.setDate(current.getDate() + 1);
         }
       });
@@ -123,7 +126,7 @@ const EmployeeCalendar: React.FC = () => {
 
   return (
     <>
-        <Sidebar/>
+        {["1", "2", "6",null].includes(role) ? <AdminSide /> : <Sidebar/>}
         <div className="calendar-container">
         <h3 style={{ textAlign: "center", marginBottom: "1rem" }}>Employee Leave Calendar</h3>
         <Calendar

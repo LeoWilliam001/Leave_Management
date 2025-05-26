@@ -16,6 +16,7 @@ const Sidebar: React.FC = () => {
     { to: "/admin_dash", label: "Dashboard" },
     { to: "/hr/viewemployees", label: "Employees" },
     { to: "/hr/createemployees", label: "Create Employee" },
+    { to: "/calendar", label: "Calendar"},
     { to: "/hr/leaverequests", label: "View Leave Requests" },
     { to: "/", label: "Logout", isLogout: true },
   ];

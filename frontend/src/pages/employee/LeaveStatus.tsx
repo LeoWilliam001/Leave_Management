@@ -108,14 +108,14 @@ const LeaveStatus: React.FC = () => {
                 <strong>Reason:</strong> 
                 <span className="truncate">{request.reason}</span>
               </p>
-              {request.status !== "Cancelled" && (
-                <button 
-                  className="cancelbutton" 
-                  onClick={() => handleCancel(request.lr_id)}
-                >
-                  Cancel
-                </button>
-              )}
+              {(request.status === "Pending" || 
+                (request.status === "Approved" && new Date(request.start_date) > new Date())) && (
+                  <button 
+                    className="cancelbutton" 
+                    onClick={() => handleCancel(request.lr_id)}
+                  >
+                    Cancel
+                  </button>)}
             </div>
           ))}
         </div>

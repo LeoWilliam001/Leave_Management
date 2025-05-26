@@ -1,21 +1,40 @@
 import { AppDataSource } from '../data-source';
 import { Employee } from '../entities/Employee.entity';
 import { FindOptionsWhere } from 'typeorm';
+import { LeaveType } from '../entities/LeaveType.entity';
+import { LeaveBalance } from '../entities/LeaveBalance.entity';
 
 export class EmpService {
   private employeeRepo = AppDataSource.getRepository(Employee);
+  private leaveTypesRepo=AppDataSource.getRepository(LeaveType);
+  private leaveBalRepo=AppDataSource.getRepository(LeaveBalance);
 
   async createEmployee(data: Partial<Employee>) {
     const employee = this.employeeRepo.create(data);
-    return await this.employeeRepo.save(employee);
+    const savedEmp = await this.employeeRepo.save(employee);
+
+    const leaveTypes=await this.leaveTypesRepo.find();
+
+    const leaveBals=leaveTypes.map((lt) => {
+      return this.leaveBalRepo.create({
+        emp_id: savedEmp.emp_id,
+        leave_type_id: lt.lt_id,
+        total_days: lt.days_allocated,
+        bal_days: lt.days_allocated,
+        lop_days: 0,
+      });
+    });
+
+    await this.leaveBalRepo.save(leaveBals);
+
+    return savedEmp;  
   }
 
-  // Get all employees (with optional filtering)
   async getAllEmployees(filters?: FindOptionsWhere<Employee>) {
     return await this.employeeRepo.find({
       where: filters, // Optional filters e.g., { department: 'IT' }
       relations:{department:true,role:true,manager:true,hr:true},
-      order: { name: 'ASC' } // Default sorting
+      order: { name: 'ASC' } 
     });
   }
 

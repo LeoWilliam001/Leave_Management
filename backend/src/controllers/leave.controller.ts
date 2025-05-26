@@ -205,7 +205,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
 export const getHolidays = async (req: Request, res: Response) => {
   try {
     const holidays = await AppDataSource.getRepository(Holiday).find();
-    console.log(holidays);
+    // console.log(holidays);
     res.status(200).json(holidays);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch holidays" });
@@ -257,3 +257,27 @@ export const ViewTeamLeave=async(req:Request,res:Response)=>{
     res.status(400).json({error:"Error in viewing team leaves"});
   }
 }
+
+export const isClashing=async(req: Request, res: Response)=>
+{
+  try
+  {
+  const {id,sdate,edate}=req.body;
+  const clashes=await leaveService.isClashing(Number(id),sdate,edate);
+  console.log("Succes or failure : "+clashes);
+  return res.status(200).json({ clashing: clashes === 1 });
+}
+  catch(err)
+  {
+    console.error(err);
+    res.json(400).json({error: "Error in getting clash values"});
+  }
+}
+
+
+
+
+
+
+
+

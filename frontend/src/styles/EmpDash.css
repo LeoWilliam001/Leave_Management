@@ -294,6 +294,18 @@
     margin-top: 10px;
   }
   
+  .balance-info {
+    margin-left: 15px;
+    color: #258acd;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .leave-form .form-group span {
+    margin-left: 15px;
+    color: #444;
+    font-weight: 500;
+  }
   .set-pass,
   .cancel-pass {
     padding: 10px 18px;
@@ -345,4 +357,86 @@
     margin: 0 0 1.5rem;
     text-align: center;
     color: #333;
+  }
+
+  .leave-section-container {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .leave-balances-section {
+    flex: 2;
+  }
+  
+  .team-leave-section {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .team-leave-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    overflow-x: hidden;
+    max-height: calc(4 * (2rem + 0.8rem));
+    overflow-y: auto;
+    }
+
+  .team-leave-container {
+    max-height: 300px; 
+    overflow-y: auto; 
+    padding-right: 8px; 
+  }
+  
+  .team-leave-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #f4f4f4;
+    padding: 0.6rem;
+    border-radius: 8px;
+    min-width: 300px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+  
+  .employee-initial-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #258acd;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+  }
+  
+  .employee-name {
+    font-weight: 500;
+  }
+  
+  .team-leave-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .team-leave-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .team-leave-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  .team-leave-container::-webkit-scrollbar-thumb {
+    background: #258acd;
+    border-radius: 10px;
+  }
+  
+  .team-leave-container::-webkit-scrollbar-thumb:hover {
+    background: #1a6a9b;
   }

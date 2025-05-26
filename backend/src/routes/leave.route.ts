@@ -12,6 +12,7 @@ import {
   setCancelled,
   ViewTeamLeave,
   getLeaveRequestsByDirector,
+  isClashing,
 } from "../controllers/leave.controller";
 
 const router = Router();
@@ -39,5 +40,7 @@ router.patch("/approve/:id", approveLeaveRequest);
 router.patch("/request/cancel/:id",setCancelled);
 
 router.get("/myteamleave/:id",ViewTeamLeave);
+
+router.post("/clashing",isClashing);
 
 export default router;
