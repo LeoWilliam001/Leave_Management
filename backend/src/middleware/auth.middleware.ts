@@ -1,4 +1,3 @@
-// middleware/auth.middleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -11,7 +10,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number; role: number };
     console.log(decoded);
-    req.emp = decoded; // Attach user to the request
+    req.emp = decoded; 
     next();
   } catch (error) {
     res.status(401).json({ error: "Invalid token" });

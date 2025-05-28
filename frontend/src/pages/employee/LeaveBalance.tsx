@@ -1,4 +1,3 @@
-// src/components/LeaveBalanceChart.tsx
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -18,7 +17,7 @@ const LeaveBalanceChart: React.FC<LeaveBalanceChartProps> = ({ type, total, bala
     labels: ["Used", "Balance"],
     datasets: [
       {
-        label: `${type} Leave`,
+        label: `${type}`,
         data: [used, balance],
         backgroundColor: ["#FF6384", "#258acd"],
         borderWidth: 1,

@@ -4,17 +4,14 @@ import { Employee } from '../entities/Employee.entity';
 
   const empService:EmpService = new EmpService();
 
-  // Create a new employee (HR-only)
   export const createEmployee=async(req: Request, res: Response)=> {
     try {
-      // 1. Check if the requesting user is HR
       const requestingUser = req.emp; 
       console.log("User requested : "+JSON.stringify(requestingUser));
       if (requestingUser.role !== 2 && requestingUser.role!==6) {
         return res.status(403).json({ error: "Only HR can create employees" });
       }
 
-      // 2. Proceed if user is HR
       console.log("Header:",req.headers);
       console.log("Incoming body:", req.body);
       const employeeData: Partial<Employee> = req.body;

@@ -8,6 +8,7 @@ import { LeaveRequest } from "./entities/LeaveRequest.entity"
 import { LeaveBalance } from "./entities/LeaveBalance.entity"
 import { Holiday } from "./entities/Holiday.entity"
 import { Role } from "./entities/Role.entity"
+import { LeaveApp } from "./entities/LeaveApproval.entity"
 
 dotenv.config();
 export const AppDataSource = new DataSource({
@@ -19,7 +20,7 @@ export const AppDataSource = new DataSource({
     database: "leave_manager",
     synchronize: true,
     logging: false,
-    entities: [Employee,Department,LeaveType,LeaveRequest,LeaveBalance,Holiday,Role],
+    entities: [Employee,Department,LeaveType,LeaveRequest,LeaveBalance,Holiday,Role, LeaveApp],
     migrations: [],
     subscribers: [],
 })

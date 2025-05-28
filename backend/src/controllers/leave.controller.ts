@@ -4,6 +4,7 @@ import { LeaveService } from "../services/leave.service";
 import { AppDataSource } from "../data-source";
 import { ApprovalStatus, LeaveRequest, LeaveStatus } from "../entities/LeaveRequest.entity";
 import { Holiday } from "../entities/Holiday.entity";
+import { LeaveApp, ApprovalStatus as LAStatus } from "../entities/LeaveApproval.entity";
 
 const leaveService = new LeaveService();
 
@@ -88,26 +89,35 @@ export const getLeaveRequestsByManager = async (req: Request, res: Response) => 
     }
   };
 
-// backend/src/controllers/leave.controller.ts
+
 export const approveLeaveRequest = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params; // Leave request ID
-    const { approver_id, action } = req.body; // Approver ID and action (approve/reject)
+    const { id } = req.params; 
+    const { approver_id, action } = req.body; 
 
     console.log("Approver id : "+approver_id);
     console.log("Action :"+action);
     const leaveRequestRepo = AppDataSource.getRepository(LeaveRequest);
     const leaveRequest = await leaveRequestRepo.findOne({
       where: { lr_id: Number(id) },
-      relations: ["employee"], // Fetch the related employee details
+      relations: ["employee"], 
     });
 
+
+    const leaveApprovalRepo = AppDataSource.getRepository(LeaveApp);
+    
     if (!leaveRequest) {
       return res.status(404).json({ message: "Leave request not found" });
     }
 
     const employ = JSON.stringify(leaveRequest.employee);
     const employee = leaveRequest.employee;
+    
+    const leaveApproval=await leaveApprovalRepo.findOne({
+      where:{approver_id: approver_id, lr_id:leaveRequest.lr_id}
+    });
+    console.log(leaveApproval);
+
     console.log("This is the employee : "+employ);
     console.log("Manager id : "+employee.manager_id);
     console.log("HR id : "+employee.hr_id);
@@ -119,6 +129,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
       if (leaveRequest.manager_approval !== ApprovalStatus.Pending) {
         return res.status(400).json({ message: "Manager has already approved/rejected this request" });
       }
+      leaveApproval.decision = action ==="approve" ? LAStatus.Approved : LAStatus.Rejected;
       leaveRequest.manager_approval = action === "approve" ? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     }
     // Check if the approver is the HR
@@ -132,6 +143,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
       else if (leaveRequest.hr_approval !== ApprovalStatus.Pending) {
         return res.status(400).json({ message: "HR has already approved/rejected this request" });
       }
+      leaveApproval.decision = action ==="approve" ? LAStatus.Approved : LAStatus.Rejected;
       leaveRequest.hr_approval = action === "approve" ? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     } 
 
@@ -149,6 +161,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
       {
         return res.status(400).json({message: "Director has already approved this request"});
       }
+      leaveApproval.decision = action ==="approve" ? LAStatus.Approved : LAStatus.Rejected;
       leaveRequest.dir_approval=action==="approve"? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     }
     
@@ -195,6 +208,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
     }
 
     const updatedLeaveRequest = await leaveRequestRepo.save(leaveRequest);
+    await leaveApprovalRepo.save(leaveApproval);
     res.status(200).json(updatedLeaveRequest);
   } catch (error) {
     console.error(error);

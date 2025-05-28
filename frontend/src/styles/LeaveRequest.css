@@ -82,5 +82,18 @@
   }
   
   .reject-btn:hover {
-    background-color: #c62828; /* Darker error color */
+    background-color: #c62828; 
   }
+  
+  .status.approved {
+    color: green;
+  }
+  
+  .status.rejected {
+    color: red;
+  }
+  
+  .status.pending {
+    color: goldenrod;
+  }
+  

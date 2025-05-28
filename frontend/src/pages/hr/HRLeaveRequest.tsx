@@ -24,6 +24,8 @@ interface LeaveRequest {
 const HRLeaveRequests: React.FC = () => {
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [rejectingRequestId, setRejectingRequestId] = useState<number | null>(null);
+  const [rejectionReason, setRejectionReason] = useState<string>("");
 
   const emp_id = localStorage.getItem("emp_id");
 
@@ -56,6 +58,7 @@ const HRLeaveRequests: React.FC = () => {
         body: JSON.stringify({
           approver_id: emp_id,
           action: app,
+          ...(app === "reject" && { rejection_reason: rejectionReason }),
         }),
       });
 
@@ -67,15 +70,30 @@ const HRLeaveRequests: React.FC = () => {
       setLeaveRequests((prev) =>
         prev.map((req) =>
           req.lr_id === lr_id
-            ? { ...req, hr_approval: app === "approve" ? "Approved" : "Rejected" }
+            ? { 
+                ...req, 
+                hr_approval: app === "approve" ? "Approved" : "Rejected",
+                status: app === "approve" ? req.status : "Rejected" 
+              }
             : req
         )
       );
 
+      setRejectingRequestId(null);
+      setRejectionReason("");
       alert(`Leave request ${app === "approve" ? "approved" : "rejected"} successfully!`);
     } catch (err: any) {
       setError(err.message);
     }
+  };
+
+  const startRejectProcess = (lr_id: number) => {
+    setRejectingRequestId(lr_id);
+  };
+
+  const cancelReject = () => {
+    setRejectingRequestId(null);
+    setRejectionReason("");
   };
 
   return (
@@ -92,6 +110,9 @@ const HRLeaveRequests: React.FC = () => {
               <th>Start Date</th>
               <th>End Date</th>
               <th>Reason</th>
+              <th>Manager Approval</th>
+              <th>HR Approval</th>
+              <th>Dir Approval</th>
               <th>Status</th>
               <th>Approval</th>
             </tr>
@@ -104,22 +125,53 @@ const HRLeaveRequests: React.FC = () => {
                 <td>{request.start_date}</td>
                 <td>{request.end_date}</td>
                 <td>{request.reason}</td>
+                <td>{request.manager_approval}</td>
+                <td>{request.hr_approval}</td>
+                <td>{request.dir_approval}</td>
                 <td className="status">{request.status}</td>
                 <td>
                   {request.hr_approval === "Pending" ? (
                     <>
-                      <button
-                        onClick={() => handleApprove(request.lr_id, "approve")}
-                        className="approve-btn"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleApprove(request.lr_id, "reject")}
-                        className="reject-btn"
-                      >
-                        Reject
-                      </button>
+                      {rejectingRequestId === request.lr_id ? (
+                        <div className="rejection-container">
+                          <textarea
+                            value={rejectionReason}
+                            onChange={(e) => setRejectionReason(e.target.value)}
+                            placeholder="Enter rejection reason"
+                            className="rejection-reason"
+                          />
+                          <div className="rejection-buttons">
+                            <button
+                              onClick={() => handleApprove(request.lr_id, "reject")}
+                              className="confirm-reject-btn"
+                              disabled={!rejectionReason.trim()}
+                            >
+                              Confirm Reject
+                            </button>
+                            <button
+                              onClick={cancelReject}
+                              className="cancel-reject-btn"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleApprove(request.lr_id, "approve")}
+                            className="approve-btn"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => startRejectProcess(request.lr_id)}
+                            className="reject-btn"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
                     </>
                   ) : (
                     <span className="status">{request.hr_approval}</span>

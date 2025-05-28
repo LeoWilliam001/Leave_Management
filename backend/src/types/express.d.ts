@@ -6,7 +6,7 @@ declare global {
       emp?: {
         id: number;
         role: number;
-      }; // Or replace with `User` if you imported it
+      }; 
     }
   }
 }

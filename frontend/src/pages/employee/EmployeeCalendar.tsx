@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer, type View } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { format, parse, startOfWeek, getDay } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { enIN } from "date-fns/locale";
 import "../../styles/BigCalendar.css";
 import Sidebar from "../employee/EmpSideBar";
 import AdminSide from "../admin/AdminSideBar";
 
 const locales = {
-  "en-US": enUS,
+  "en-IN": enIN,
 };
 
 const localizer = dateFnsLocalizer({
@@ -106,10 +106,10 @@ const EmployeeCalendar: React.FC = () => {
   
 
   const eventStyleGetter = (event: Event) => {
-    let backgroundColor = "#3174ad"; // default
-    if (event.title === "Week Off") backgroundColor = "#d1fae5"; // light green
-    else if (event.type === "leave") backgroundColor = "#fca5a5"; // red
-    else if (event.type === "holiday") backgroundColor = "#fcd34d"; // yellow
+    let backgroundColor = "#3174ad";
+    if (event.title === "Week Off") backgroundColor = "#d1fae5";
+    else if (event.type === "leave") backgroundColor = "#fca5a5"; 
+    else if (event.type === "holiday") backgroundColor = "#fcd34d";
   
     return {
       style: {

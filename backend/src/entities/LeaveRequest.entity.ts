@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Timestamp } from "typeorm";
 import { Employee } from "./Employee.entity";
 import { LeaveType } from "./LeaveType.entity";
 
@@ -35,6 +35,9 @@ export class LeaveRequest {
 
   @Column({ type: 'text', nullable: true })
   reason: string;
+
+  @Column({type:'timestamp', default:()=>'CURRENT_TIMESTAMP'})
+  req_at: Timestamp;
 
   @Column({ type: 'enum', enum: ApprovalStatus, default: ApprovalStatus.NotRequired})
   manager_approval: ApprovalStatus;

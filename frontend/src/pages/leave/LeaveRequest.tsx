@@ -11,6 +11,7 @@ interface LeaveRequest {
   reason: string;
   status: string;
   manager_approval: string;
+  hr_approval:string;
   dir_approval: string;
   employee: {
     name: string;
@@ -18,6 +19,20 @@ interface LeaveRequest {
     dir_id: number;
   };
 }
+
+const getStatusClass = (status: string) => {
+  switch (status) {
+    case "Approved":
+      return "status approved";
+    case "Rejected":
+      return "status rejected";
+    case "Pending":
+      return "status pending";
+    default:
+      return "status";
+  }
+};
+
 
 const LeaveRequest: React.FC = () => {
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
@@ -104,6 +119,9 @@ const LeaveRequest: React.FC = () => {
               <th>End Date</th>
               <th>Reason</th>
               <th>Status</th>
+              <th>Manager Approval</th>
+              <th>HR Approval</th>
+              <th>Dir Approval</th>
               <th>Approval</th>
             </tr>
           </thead>
@@ -115,7 +133,10 @@ const LeaveRequest: React.FC = () => {
                 <td>{request.start_date}</td>
                 <td>{request.end_date}</td>
                 <td>{request.reason}</td>
-                <td className="status">{request.status}</td>
+                <td className={getStatusClass(request.manager_approval)}>{request.manager_approval}</td>
+                <td className={getStatusClass(request.hr_approval)}>{request.hr_approval}</td>
+                <td className={getStatusClass(request.dir_approval)}>{request.dir_approval}</td>
+                <td className={getStatusClass(request.status)}>{request.status}</td>
                 <td>
                 {(request.manager_approval === "Pending" && request.employee.manager_id.toString() === manager_id) ? (
                   <>

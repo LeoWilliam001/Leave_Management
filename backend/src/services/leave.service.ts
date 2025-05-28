@@ -4,9 +4,11 @@ import { Employee } from "../entities/Employee.entity";
 import { ApprovalStatus, LeaveStatus } from "../entities/LeaveRequest.entity";
 import { In } from "typeorm"; // Import the In operator
 import { LeaveType } from "../entities/LeaveType.entity";
+import { LeaveApp } from "../entities/LeaveApproval.entity";
 
 export class LeaveService {
   private leaveRequestRepo = AppDataSource.getRepository(LeaveRequest);
+  private leaveApprovalRepo = AppDataSource.getRepository(LeaveApp);
   private employeeRepo = AppDataSource.getRepository(Employee);
 
   // Create a new leave request
@@ -22,6 +24,7 @@ export class LeaveService {
 
     if (employee.manager_id !== null) {
       data.manager_approval = ApprovalStatus.Pending;
+
     }
     if (employee.hr_id !== null) {
       data.hr_approval = ApprovalStatus.Pending;
@@ -35,7 +38,27 @@ export class LeaveService {
     }
 
     const leaveRequest = this.leaveRequestRepo.create(data);
-    return await this.leaveRequestRepo.save(leaveRequest);
+    await this.leaveRequestRepo.save(leaveRequest);
+    const approverIds=[];
+
+    if (leaveRequest.manager_approval === ApprovalStatus.Pending && employee.manager_id) {
+      approverIds.push(employee.manager_id);
+    }
+    if (leaveRequest.hr_approval === ApprovalStatus.Pending && employee.hr_id) {
+      approverIds.push(employee.hr_id);
+    }
+    if (leaveRequest.dir_approval === ApprovalStatus.Pending && employee.dir_id) {
+      approverIds.push(employee.dir_id);
+    }
+    
+    const leaveApps = approverIds.map(approverId =>
+      this.leaveApprovalRepo.create({
+        lr_id: leaveRequest.lr_id,
+        approver_id: approverId,
+        decision: ApprovalStatus.Pending
+      })
+    );
+    return await this.leaveApprovalRepo.save(leaveApps);
   }
 
   // Get all leave requests

@@ -75,7 +75,7 @@ const LeaveStatus: React.FC = () => {
     <div className="dashboard-wrapper">
       <Sidebar />
       <main className="dashboard-main">
-        <h2>Leave Status</h2>
+        <h2>Leave History</h2>
         {error && <p className="error-message">{error}</p>}
   
         <div className="status-button">

@@ -218,4 +218,3 @@ const EmployeeDashboard: React.FC = () => {
 };
 
 export default EmployeeDashboard;
-// #36A2EB

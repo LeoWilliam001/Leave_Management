@@ -109,7 +109,6 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setError("");
 
     try {
-      // Basic validation
       if (!leaveType || !startDate || !endDate || !reason) {
         setError("All fields are required.");
         return;
@@ -118,7 +117,7 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       if (new Date(startDate) >= new Date(endDate)) {
         setError("Start date must be earlier than the end date");
         return;
-      } else if (new Date() > new Date(startDate)) {
+      } else if (new Date() >= new Date(startDate)) {
         setError("Start date must begin after this day");
         return;
       }
