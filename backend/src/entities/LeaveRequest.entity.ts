@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Timestamp } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import { Employee } from "./Employee.entity";
 import { LeaveType } from "./LeaveType.entity";
+import { LeaveApp } from "./LeaveApproval.entity";
 
 export enum ApprovalStatus {
   Pending = "Pending",
@@ -37,7 +38,7 @@ export class LeaveRequest {
   reason: string;
 
   @Column({type:'timestamp', default:()=>'CURRENT_TIMESTAMP'})
-  req_at: Timestamp;
+  req_at: Date;
 
   @Column({ type: 'enum', enum: ApprovalStatus, default: ApprovalStatus.NotRequired})
   manager_approval: ApprovalStatus;
@@ -61,4 +62,7 @@ export class LeaveRequest {
   @ManyToOne(()=>LeaveType,(lr)=>lr.leaveRequests)
   @JoinColumn({ name: 'leave_type' })
   leaveType: LeaveType;
+
+  @OneToMany(()=>LeaveApp,(la)=>la.leaveRequest)
+  leaveApp: LeaveApp[];
 }

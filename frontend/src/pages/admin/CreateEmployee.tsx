@@ -58,7 +58,16 @@ const CreateEmp: React.FC = () => {
       <Sidebar />
       <div className="content">
         <div className="card">
-          <h2 style={{color:'#3498db'}}>Create Employee</h2>
+          {/* X Button at top-right */}
+          <button
+            onClick={() => navigate("/admin_dash")}
+            className="close-button"
+            title="Close"
+          >
+            &times;
+          </button>
+  
+          <h2 style={{ color: '#3498db' }}>Create Employee</h2>
           <form onSubmit={handleSubmit} className="create-emp-form">
             <div>
               <label>Name</label>
@@ -105,18 +114,15 @@ const CreateEmp: React.FC = () => {
               <input name="phno" onChange={handleChange} required />
             </div>
             <div className="form-actions">
-              <button type="submit" className="submit-button" style={{backgroundColor:'#3498db'}}>
+              <button type="submit" className="submit-button" style={{ backgroundColor: '#3498db' }}>
                 Create
-              </button>
-              <button type="button" onClick={() => navigate("/admin_dash")} className="cancel-button">
-                Cancel
               </button>
             </div>
           </form>
         </div>
       </div>
     </div>
-  );
+  );  
 };
 
 export default CreateEmp;

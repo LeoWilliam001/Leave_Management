@@ -32,19 +32,31 @@ export class EmpService {
 
   async getAllEmployees(filters?: FindOptionsWhere<Employee>) {
     return await this.employeeRepo.find({
-      where: filters, // Optional filters e.g., { department: 'IT' }
+      where: filters,
       relations:{department:true,role:true,manager:true,hr:true},
       order: { name: 'ASC' } 
     });
   }
 
-  // Get employee by ID (strict check)
   async getEmployeeById(emp_id: number) {
     console.log(emp_id);
     const empRepo = AppDataSource.getRepository(Employee);
     return await empRepo.findOne({
-      where: { emp_id }
+      where: { emp_id },
+      relations:{department:true,role:true,manager:true,hr:true},
     });
+  }
+
+  async getEmployeesByTeam(emp_id: number)
+  {
+    console.log(emp_id);
+    const empRepo=AppDataSource.getRepository(Employee);
+    const teams=await empRepo.find({
+      where:[{manager_id:emp_id}, {hr_id:emp_id}, {dir_id:emp_id}],
+      relations:['role','department']
+    })
+    console.log(teams);
+    return teams;
   }
   
 

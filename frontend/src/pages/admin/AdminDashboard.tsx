@@ -98,7 +98,7 @@ const HRDashboard: React.FC = () => {
     <div className="dashboard-wrapper">
       <Sidebar/>
       <main className="dashboard-main">
-        <h1 className="dashboard-heading" style={{color:'#3498db'}}>HR Dashboard</h1>
+        <h1 className="dashboard-heading" style={{color:'#3498db'}}>Welcome {name}</h1>
         <button className="profile-button" onClick={() => setShowModal(true)} style={{backgroundColor:'#3498db'}}>Edit Password</button>
         <br/>
         {(employee)&&(employee.manager_id!=null || employee.hr_id!=null || employee.dir_id!=null) &&<button className="profile-button" onClick={() => setApplyLeave(true)} style={{backgroundColor:'#3498db'}}>Apply Leave</button>}

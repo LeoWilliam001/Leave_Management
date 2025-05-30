@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/EmpDash.css";
+import "../../styles/EmpDash.css"; // Ensure this path is correct
 import Sidebar from "./EmpSideBar";
 import ApplyLeave from "./ApplyLeave";
 import LeaveBalanceChart from "./LeaveBalance";
 
+// Define interfaces for better type safety
+interface Department {
+  dept_id: number;
+  dept_name: string;
+}
+
+interface Role {
+  role_id: number;
+  role_name: string;
+}
+
 interface Employee {
   emp_id: number;
   name: string;
-  password: string;
   age: number;
   email_id: string;
   dept_id: number;
@@ -17,10 +27,11 @@ interface Employee {
   dir_id: number | null;
   address: string;
   phno: string;
-  manager: Employee | null;
-  hr: Employee | null;
+  manager?: Employee | null; // Optional as it might not be populated or self-referential
+  hr?: Employee | null; // Optional
+  department: Department;
+  role: Role;
 }
-
 
 const EmployeeDashboard: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
@@ -30,16 +41,17 @@ const EmployeeDashboard: React.FC = () => {
   const [newPassword, setNewPassword] = useState("");
   const [teamLeaveRequests, setTeamLeaveRequests] = useState([]);
   const [leaveBalances, setLeaveBalances] = useState([]);
-  const [age, setAge] = useState();
-  const [role, setRole] = useState("");
-  const [employee, setEmployee] = useState<Employee|null>(null);
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [teamMembers, setTeamMembers] = useState<Employee[]>([]); // New state for team members
+  const [selectedEmployeeDetail, setSelectedEmployeeDetail] =
+    useState<Employee | null>(null); 
 
-  const name = localStorage.getItem("name");
   const emp_id = localStorage.getItem("emp_id");
 
+  // Re-using the TeamLeaveCard component for consistency or creating a new one
   const TeamLeaveCard: React.FC<{ name: string }> = ({ name }) => {
-    const firstLetter = name ? name.charAt(0).toUpperCase() : '?';
-    
+    const firstLetter = name ? name.charAt(0).toUpperCase() : "?";
+
     return (
       <div className="team-leave-card">
         <div className="employee-initial-circle">{firstLetter}</div>
@@ -48,18 +60,61 @@ const EmployeeDashboard: React.FC = () => {
     );
   };
 
+  // New component for Team Member Card with View button
+  const TeamMemberCard: React.FC<{ employee: Employee }> = ({ employee }) => {
+    const firstLetter = employee.name ? employee.name.charAt(0).toUpperCase() : '?';
+    return (
+      <div className="team-member-card">
+        <div className="employee-initial-circle" style={{ backgroundColor: '#258acd' }}>{firstLetter}</div>
+        <div className="employee-info">
+          <div className="employee-name">{employee.name}</div>
+          <div className="employee-role">{employee.role.role_name}</div>
+        </div>
+        <button
+          className="view-employee-button"
+          style={{ backgroundColor: '#3498db', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '5px', cursor: 'pointer' }}
+          onClick={() => setSelectedEmployeeDetail(employee)}
+        >
+          View
+        </button>
+      </div>
+    );
+  };
+
+  // New component for Employee Detail Modal
+  const EmployeeDetailModal: React.FC<{ employee: Employee; onClose: () => void }> = ({
+    employee,
+    onClose,
+  }) => {
+    return (
+      <div className="modal-overlay">
+        <div className="employee-detail-modal-content">
+          <h2>Employee Details</h2>
+          <p><strong>Name:</strong> {employee.name}</p>
+          <p><strong>Employee ID:</strong> {employee.emp_id}</p>
+          <p><strong>Email:</strong> {employee.email_id}</p>
+          <p><strong>Age:</strong> {employee.age}</p>
+          <p><strong>Phone:</strong> {employee.phno}</p>
+          <p><strong>Address:</strong> {employee.address}</p>
+          <p><strong>Department:</strong> {employee.department.dept_name}</p>
+          <p><strong>Role:</strong> {employee.role.role_name}</p>
+          {employee.manager && <p><strong>Manager:</strong> {employee.manager.name}</p>}
+          {employee.hr && <p><strong>HR:</strong> {employee.hr.name}</p>}
+          <button onClick={onClose} style={{ backgroundColor: '#258acd', color: 'white', border: 'none', padding: '10px 15px', borderRadius: '5px', cursor: 'pointer', marginTop: '20px' }}>
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        if (!emp_id) return;
-
-        // Fetch Role
-        const roleRes = await fetch(`http://localhost:3000/api/users/role/${emp_id}`);
-        const roleData = await roleRes.json();
-        if (roleRes.ok) {
-          setRole(roleData.role);
-        } else {
-          console.error("Failed to fetch role:", roleData.message);
+        if (!emp_id) {
+          console.warn("emp_id not found in localStorage. Cannot fetch data.");
+          return;
         }
 
         // Fetch Leave Balance
@@ -80,22 +135,36 @@ const EmployeeDashboard: React.FC = () => {
           console.error("Failed to fetch team leave:", teamLeaveData.error);
         }
 
-        const empl = await fetch(`http://localhost:3000/api/users/${emp_id}`);
-        const employeeData = await empl.json();
-        
-        if (empl.ok) {
-          setAge(employeeData.age);
+        // Fetch Current Employee Data
+        const emplRes = await fetch(`http://localhost:3000/api/users/${emp_id}`);
+        const employeeData = await emplRes.json();
+
+        if (emplRes.ok) {
           setEmployee(employeeData);
         } else {
           console.error("Failed to fetch employee: ", employeeData.error);
+          setEmployee(null); // Ensure employee is null if fetch fails
         }
+
+        // Fetch Team Members (New API call)
+        const teamRes = await fetch(`http://localhost:3000/api/users/team/${emp_id}`);
+        const teamData = await teamRes.json();
+        if (teamRes.ok) {
+          // Filter out the current employee from the team members list
+          const filteredTeam = teamData.filter((member: Employee) => member.emp_id !== parseInt(emp_id));
+          setTeamMembers(filteredTeam);
+        } else {
+          console.error("Failed to fetch team members:", teamData.error);
+          setTeamMembers([]);
+        }
+
       } catch (err) {
         console.error("Error fetching data:", err);
       }
     };
 
     fetchAllData();
-  }, [emp_id]);
+  }, [emp_id]); // Dependency array: re-run if emp_id changes
 
   const handlePasswordChange = async () => {
     try {
@@ -123,33 +192,42 @@ const EmployeeDashboard: React.FC = () => {
     <>
       <Sidebar />
       <main className="dashboard-main">
-        <h1 className="dashboard-heading">Employee Dashboard</h1>
+        <h1 className="dashboard-heading" style={{ fontFamily: 'Times New Roman' }}>Welcome {employee?.name}</h1>
         <button className="profile-button" onClick={() => setShowModal(true)}>
           Edit Password
         </button>
         <br />
-        {(employee)&&(employee.manager_id!=null || employee.hr_id!=null || employee.dir_id!=null) &&<button className="profile-button" onClick={() => setApplyLeave(true)}>
-          Apply Leave
-        </button>}
+        {/* Only show Apply Leave button if the employee has a manager/HR/director */}
+        {(employee) && (employee.manager_id !== null || employee.hr_id !== null || employee.dir_id !== null) && (
+          <button className="profile-button" onClick={() => setApplyLeave(true)}>
+            Apply Leave
+          </button>
+        )}
         <div className="employee-details">
-          <p><strong>Name:</strong> {name}</p>
-          <p><strong>Role:</strong> {role}</p>
-          <p><strong>Age:</strong> {age}</p>
+          <p><strong>Name:</strong> {employee?.name}</p>
+          {employee?.manager_id && employee?.manager && <p><strong>Manager:</strong> {employee?.manager?.name}</p>}
+          {employee?.hr_id && employee?.hr && <p><strong>HR:</strong> {employee?.hr?.name}</p>}
+          <p><strong>Role:</strong> {employee?.role.role_name}</p>
         </div>
 
-        {(employee)&&(employee.manager_id!=null || employee.hr_id!=null || employee.dir_id!=null) &&(
+        {/* This entire section (Leave Balances & Team Leave) is conditionally rendered */}
+        {(employee) && (employee.manager_id !== null || employee.hr_id !== null || employee.dir_id !== null) && (
           <div className="leave-section-container">
             <div className="leave-balances-section">
               <h2>Your Leave Balances</h2>
               <div className="leave-balance-cards" style={{ display: "flex", flexWrap: "wrap", gap: "2rem" }}>
-                {leaveBalances.map((bal: any) => (
-                  <LeaveBalanceChart
-                    key={bal.lb_id}
-                    type={bal.leaveType?.type_of_leave}
-                    total={bal.total_days}
-                    balance={bal.bal_days}
-                  />
-                ))}
+                {leaveBalances.length > 0 ? (
+                  leaveBalances.map((bal: any) => (
+                    <LeaveBalanceChart
+                      key={bal.lb_id}
+                      type={bal.leaveType?.type_of_leave}
+                      total={bal.total_days}
+                      balance={bal.bal_days}
+                    />
+                  ))
+                ) : (
+                  <p>No leave balances found.</p>
+                )}
               </div>
             </div>
 
@@ -170,8 +248,22 @@ const EmployeeDashboard: React.FC = () => {
           </div>
         )}
 
+        {/* New section for Team Members */}
+        {teamMembers.length > 0 && ( 
+          <div className="team-members-section">
+            <h2 style={{marginTop: '30px'}}>Team Members</h2>
+            <div className="team-members-container" style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+              {teamMembers.map((member: Employee) => (
+                <TeamMemberCard key={member.emp_id} employee={member} />
+              ))}
+            </div>
+          </div>
+        )}
+
+
+        {/* Password Change Modal */}
         {showModal && (
-          <div className="modaloverlay">
+          <div className="modal-overlay"> {/* Renamed from modaloverlay to be consistent */}
             <div className="pass-modal">
               <h2>Change Password</h2>
               <div className="password-input-wrapper">
@@ -205,12 +297,21 @@ const EmployeeDashboard: React.FC = () => {
           </div>
         )}
 
-        { applyLeave && (
+        {/* Apply Leave Modal */}
+        {applyLeave && (
           <div className="modal-overlay">
             <div className="modal-content">
               <ApplyLeave onClose={() => setApplyLeave(false)} />
             </div>
           </div>
+        )}
+
+        {/* Employee Detail Modal */}
+        {selectedEmployeeDetail && (
+          <EmployeeDetailModal
+            employee={selectedEmployeeDetail}
+            onClose={() => setSelectedEmployeeDetail(null)}
+          />
         )}
       </main>
     </>

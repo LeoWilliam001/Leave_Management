@@ -11,7 +11,7 @@ import { Employee } from '../entities/Employee.entity';
       if (requestingUser.role !== 2 && requestingUser.role!==6) {
         return res.status(403).json({ error: "Only HR can create employees" });
       }
-
+      
       console.log("Header:",req.headers);
       console.log("Incoming body:", req.body);
       const employeeData: Partial<Employee> = req.body;
@@ -32,6 +32,22 @@ import { Employee } from '../entities/Employee.entity';
       res.status(200).json(employees);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch employees" });
+    }
+  }
+
+  export const getEmployeesByTeam=async(req:Request,res:Response)=>
+  {
+    try{
+      const id = parseInt(req.params.id);
+      const employees=await empService.getEmployeesByTeam(Number(id));
+      if(!employees)
+      {
+        res.status(400).json({error: "No employee found here. This is an error in your side"});
+      }
+      res.status(200).json(employees);
+    }
+    catch(err){
+      res.status(500).json({error: "Failed to fetch team"});
     }
   }
   

@@ -7,7 +7,7 @@ export class Holiday{
 
     @Column({type:"date"})
     date: Date;
-
+    
     @Column({type:"varchar"})
     fest: string;
 }

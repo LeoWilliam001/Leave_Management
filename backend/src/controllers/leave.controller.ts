@@ -93,7 +93,8 @@ export const getLeaveRequestsByManager = async (req: Request, res: Response) => 
 export const approveLeaveRequest = async (req: Request, res: Response) => {
   try {
     const { id } = req.params; 
-    const { approver_id, action } = req.body; 
+    const { approver_id, action, rejection_reason} = req.body; 
+
 
     console.log("Approver id : "+approver_id);
     console.log("Action :"+action);
@@ -144,6 +145,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "HR has already approved/rejected this request" });
       }
       leaveApproval.decision = action ==="approve" ? LAStatus.Approved : LAStatus.Rejected;
+      leaveApproval.comment=action !=="approve" ? rejection_reason:"";
       leaveRequest.hr_approval = action === "approve" ? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     } 
 
@@ -162,6 +164,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
         return res.status(400).json({message: "Director has already approved this request"});
       }
       leaveApproval.decision = action ==="approve" ? LAStatus.Approved : LAStatus.Rejected;
+      
       leaveRequest.dir_approval=action==="approve"? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     }
     
@@ -177,7 +180,12 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
     ) {
       console.log("Inside final approval");
       leaveRequest.status = LeaveStatus.Approved;
+    }
 
+
+    else if((leaveRequest.manager_approval === ApprovalStatus.Rejected)||(leaveRequest.hr_approval === ApprovalStatus.Rejected)||(leaveRequest.dir_approval === ApprovalStatus.Rejected))
+    {
+      leaveRequest.status = LeaveStatus.Rejected;
       const leaveBalRepo=AppDataSource.getRepository("LeaveBalance");
       const leaveBal=await leaveBalRepo.findOne({
         where:{
@@ -186,6 +194,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
         }
       });
 
+      
       console.log("Employee id: "+leaveRequest.emp_id);
       console.log("Levae Type id : "+leaveRequest.leave_type);
       console.log(leaveBal);
@@ -198,13 +207,8 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Insufficient leave balance" });
       }
     
-      leaveBal.bal_days -= leaveRequest.num_days;
+      leaveBal.bal_days += leaveRequest.num_days;
       await leaveBalRepo.save(leaveBal);
-    }
-
-    else if((leaveRequest.manager_approval === ApprovalStatus.Rejected)||(leaveRequest.hr_approval === ApprovalStatus.Rejected))
-    {
-      leaveRequest.status = LeaveStatus.Rejected;
     }
 
     const updatedLeaveRequest = await leaveRequestRepo.save(leaveRequest);
@@ -279,6 +283,7 @@ export const isClashing=async(req: Request, res: Response)=>
   const {id,sdate,edate}=req.body;
   const clashes=await leaveService.isClashing(Number(id),sdate,edate);
   console.log("Succes or failure : "+clashes);
+  console.log(clashes === 1);
   return res.status(200).json({ clashing: clashes === 1 });
 }
   catch(err)

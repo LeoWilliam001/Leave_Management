@@ -2,22 +2,53 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "./EmpSideBar"; 
 import "../../styles/LeaveStatus.css";
 
+interface LeaveType{
+  lt_id: number;
+  type_of_leave: string;
+  days_allocates: number;
+}
+interface Employee{
+  name: string;
+}
+interface LeaveApp{
+  la_id: number;
+  approver_id:number;
+  decision: string;
+  comment:string | null;
+  actionAt: Date;
+}
 interface LeaveRequest {
   lr_id: number;
-  leave_type: string;
+  leave_type: number;
   start_date: string;
   end_date: string;
   reason: string;
   status: string;
+  req_at: Date;
   manager_approval: string;
   hr_approval: string;
   dir_approval: string;
+  leaveType: LeaveType;
+  employee: Employee;
+  leaveApp: LeaveApp[];
 }
 
 const LeaveStatus: React.FC = () => {
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [error, setError] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
+  const [selectedRequest, setSelectedRequest] = useState<LeaveRequest | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleView = (request: LeaveRequest) => {
+    setSelectedRequest(request);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedRequest(null);
+  };
 
   const emp_id = localStorage.getItem("emp_id");
 
@@ -83,13 +114,14 @@ const LeaveStatus: React.FC = () => {
           <button onClick={() => handleFilterChange("Pending")}>Pending</button>
           <button onClick={() => handleFilterChange("Approved")}>Approved</button>
           <button onClick={() => handleFilterChange("Rejected")}>Rejected</button>
+          <button onClick={() => handleFilterChange("Cancelled")}>Cancelled</button>
         </div>
   
         <div className="leave-status-container">
           {filteredRequests.map((request) => (
             <div key={request.lr_id} className="leave-card">
               <div className="leave-card-header">
-                <h3>Request #{request.lr_id}</h3>
+                <h4>Req on : {new Date(request.req_at).toLocaleDateString()}</h4>
                 <span 
                   className={`leave-status ${request.status.replace(/\s+/g, '')}`}
                 >
@@ -98,7 +130,7 @@ const LeaveStatus: React.FC = () => {
               </div>
               <p>
                 <strong>Type:</strong> 
-                <span>{request.leave_type}</span>
+                <span>{request.leaveType.type_of_leave}</span>
               </p>
               <p>
                 <strong>Dates:</strong> 
@@ -108,17 +140,64 @@ const LeaveStatus: React.FC = () => {
                 <strong>Reason:</strong> 
                 <span className="truncate">{request.reason}</span>
               </p>
-              {(request.status === "Pending" || 
-                (request.status === "Approved" && new Date(request.start_date) > new Date())) && (
-                  <button 
-                    className="cancelbutton" 
-                    onClick={() => handleCancel(request.lr_id)}
-                  >
-                    Cancel
-                  </button>)}
-            </div>
+
+              <div style={{ display: 'flex', justifyContent:'space-between', gap: '10px', marginTop: '5px' }}>
+                <button 
+                  style={{ padding: '3px', color:'#3498db' }} 
+                  onClick={() => handleView(request)}
+                >
+                  View
+                </button>
+
+                {(request.status === "Pending" || 
+                  (request.status === "Approved" && new Date(request.start_date) > new Date())) && (
+                    <button 
+                      className="cancelbutton" 
+                      onClick={() => handleCancel(request.lr_id)}
+                    >
+                      Cancel
+                    </button>
+                )}
+              </div>
+
+            </div> 
           ))}
         </div>
+        {showModal && selectedRequest && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <button className="modal-close" onClick={closeModal}>❌</button>
+              <h3>Leave Request Details</h3>
+              <p><strong>Leave Type:</strong> {selectedRequest.leaveType.type_of_leave}</p>
+              <p><strong>Dates:</strong> {selectedRequest.start_date} to {selectedRequest.end_date}</p>
+              <p><strong>Reason:</strong> {selectedRequest.reason}</p>
+              <p><strong>Status:</strong> {selectedRequest.status}</p>
+              <p><strong>Requested At:</strong> {new Date(selectedRequest.req_at).toLocaleString()}</p>
+              <p><strong>Manager Approval:</strong> {selectedRequest.manager_approval}</p>
+              <p><strong>HR Approval:</strong> {selectedRequest.hr_approval}</p>
+              <p><strong>Director Approval:</strong> {selectedRequest.dir_approval}</p>
+              {selectedRequest.leaveApp && selectedRequest.leaveApp.length > 0 && (
+                <>
+                  <h4>Approval Trail</h4>
+                  <ul>
+                    {selectedRequest.leaveApp.map((approval,index) => (
+                      <li key={approval.la_id}>
+                        <p><strong>Level </strong>{index+1}</p>
+                        <p><strong>Approver ID:</strong> {approval.approver_id}</p>
+                        <p><strong>Decision:</strong> {approval.decision}</p>
+                        <p><strong>Comment:</strong> {approval.comment || "None"}</p>
+                        <p><strong>Action At:</strong> {new Date(approval.actionAt).toLocaleString()}</p>
+                        <hr />
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );

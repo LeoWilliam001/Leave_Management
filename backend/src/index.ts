@@ -7,11 +7,12 @@ import empRoutes from './routes/emp.route';
 import testTokenRoutes from './routes/test-token.route';
 import authRoutes from './routes/auth.route'
 import leaveRoutes from './routes/leave.route';
+import holidayRoutes from './routes/holiday.route';
 import cors from 'cors';
 
 dotenv.config();
 
-
+console.log(process.env.MYSQL_PASS);
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors({
@@ -24,6 +25,7 @@ app.use('/api/test', testTokenRoutes);
 app.use("/api/auth", authRoutes);
 app.use('/api/leave',leaveRoutes);
 app.use('/api/bal', balRoutes);
+app.use('/api/holiday',holidayRoutes);
 
 AppDataSource.initialize()
   .then(() => {

@@ -93,7 +93,7 @@
 }
 
 .status-button button:hover {
-  background-color: rgb(49, 152, 2);
+  background-color: #258acd;
   transform: translateY(-2px);
 }
 
@@ -131,7 +131,7 @@
   border-bottom: 1px solid #eee;
 }
 
-.leave-card h3 {
+.leave-card h4 {
   margin: 0;
   font-size: 1.1rem;
   color: #258acd;
@@ -183,9 +183,6 @@
 
 /* Cancel button */
 .cancelbutton {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
   background-color: #e53935;
   color: white;
   border: none;
@@ -195,6 +192,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 
 .cancel-button:hover {
   background-color: #c62828;
@@ -217,4 +215,38 @@
   .leave-status-container {
     grid-template-columns: 1fr;
   }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 400px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #e74c3c;
 }

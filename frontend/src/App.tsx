@@ -12,6 +12,7 @@ import AllEmployees from "./pages/admin/ViewEmployees";
 import CreateEmp from "./pages/admin/CreateEmployee";
 // import { Calendar } from "react-big-calendar";
 import EmployeeCalendar from "./pages/employee/EmployeeCalendar";
+import HolidayForm from "./pages/admin/CreateHoliday";
 
 const App: React.FC = () => {
   return (
@@ -91,6 +92,14 @@ const App: React.FC = () => {
           element={
             <PrivateRoute allowedRoles={[1,2,3,4,5,6]}>
               <EmployeeCalendar/>
+            </PrivateRoute>
+          }
+        />
+
+      <Route path="/holiday/edit"
+          element={
+            <PrivateRoute allowedRoles={[1,2,6]}>
+              <HolidayForm/>
             </PrivateRoute>
           }
         />

@@ -132,6 +132,7 @@ const AllEmployees: React.FC = () => {
         </div>
 
         <div className="search-bar">
+          <label style={{marginRight:'7px'}}>Search</label>
           <input
             type="text"
             placeholder="Search employees..."

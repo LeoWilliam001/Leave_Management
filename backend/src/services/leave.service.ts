@@ -3,12 +3,13 @@ import { LeaveRequest } from "../entities/LeaveRequest.entity";
 import { Employee } from "../entities/Employee.entity";
 import { ApprovalStatus, LeaveStatus } from "../entities/LeaveRequest.entity";
 import { In } from "typeorm"; // Import the In operator
-import { LeaveType } from "../entities/LeaveType.entity";
 import { LeaveApp } from "../entities/LeaveApproval.entity";
+import { LeaveBalance } from "../entities/LeaveBalance.entity";
 
 export class LeaveService {
   private leaveRequestRepo = AppDataSource.getRepository(LeaveRequest);
   private leaveApprovalRepo = AppDataSource.getRepository(LeaveApp);
+  private leaveBalRepo = AppDataSource.getRepository(LeaveBalance);
   private employeeRepo = AppDataSource.getRepository(Employee);
 
   // Create a new leave request
@@ -58,6 +59,20 @@ export class LeaveService {
         decision: ApprovalStatus.Pending
       })
     );
+
+    const leaveBal=await this.leaveBalRepo.findOne({
+      where:{emp_id: data.emp_id, leave_type_id:leaveRequest.leave_type}
+    });
+
+    console.log("Balance leaves : "+leaveBal);
+
+    if (leaveBal) {
+      leaveBal.bal_days -= data.num_days;
+      await this.leaveBalRepo.save(leaveBal);
+    }
+
+    console.log("After updation : "+leaveBal);
+    
     return await this.leaveApprovalRepo.save(leaveApps);
   }
 
@@ -81,7 +96,7 @@ export class LeaveService {
     const leaveRequestRepo = AppDataSource.getRepository(LeaveRequest);
     return await leaveRequestRepo.find({
       where: { emp_id },
-      relations: ["employee","leaveType"], 
+      relations: ["employee","leaveType","leaveApp"], 
     });
   };
 
@@ -194,17 +209,18 @@ export class LeaveService {
 
   async isClashing(id: number, sdate:Date, edate:Date)
   {
-    const approvedLeaves=await this.leaveRequestRepo.find({where:{emp_id:id, status:LeaveStatus.Approved}});
+    const approvedLeaves=await this.leaveRequestRepo.find({where:{emp_id:id, status:In([LeaveStatus.Approved, LeaveStatus.Pending])}});
 
     if(approvedLeaves.length==0)
     {
       return 1;
     }
-    console.log(approvedLeaves);
+    console.log("These are the approved leaves : "+approvedLeaves);
     for(const leave of approvedLeaves)
     {
       const startDate=new Date(leave.start_date);
       const endDate =new Date(leave.end_date);
+      console.log(leave);
       console.log(startDate+":"+endDate);
       console.log(new Date(sdate)+":"+new Date(edate));
       const isOverlap= new Date(sdate)<=endDate && new Date(edate)>=startDate;
@@ -213,8 +229,8 @@ export class LeaveService {
       {
         return 0;
       }
-      return 1;
     }
+    return 1;
   }
 
 }

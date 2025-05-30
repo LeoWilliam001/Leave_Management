@@ -29,11 +29,11 @@ export class LeaveApp {
     @CreateDateColumn({ name: 'action_at', type: 'timestamp' })
     actionAt: Timestamp;
 
-    @ManyToOne(() => LeaveRequest)
+    @ManyToOne(() => LeaveRequest,(la)=>la.leaveApp)
     @JoinColumn({ name: 'lr_id' })
     leaveRequest: LeaveRequest;
   
-    @ManyToOne(() => Employee)
+    @ManyToOne(() => Employee,(la)=>la.emp)
     @JoinColumn({ name: 'approver_id' })
     approver: Employee;
   }

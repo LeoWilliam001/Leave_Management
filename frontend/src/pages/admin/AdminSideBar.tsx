@@ -20,7 +20,7 @@ const Sidebar: React.FC = () => {
     { to: "/hr/leaverequests", label: "View Leave Requests" },
     { to: "/", label: "Logout", isLogout: true },
   ];
-
+  
   return (
     <aside className="dashboard-sidebar" style={{ backgroundColor: "#3498db" }}>
       <h2 className="sidebar-title">HR</h2>

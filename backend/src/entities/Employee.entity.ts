@@ -3,6 +3,7 @@ import { Department } from "./Department.entity";
 import { Role } from "./Role.entity";
 import { LeaveBalance } from "./LeaveBalance.entity";
 import { LeaveRequest } from "./LeaveRequest.entity";
+import { LeaveApp } from "./LeaveApproval.entity";
 
 @Entity('employees')
 export class Employee{
@@ -58,7 +59,7 @@ export class Employee{
     subordinates: Employee[];
 
     @ManyToOne(()=>Employee,(emp)=>emp.hrTeam,{nullable:true})
-    @JoinColumn({ name: 'hr_id' })
+    @JoinColumn({ name: 'hr_id'})
     hr: Employee;
 
     @OneToMany(()=>Employee,(emp)=>emp.hr)
@@ -76,4 +77,7 @@ export class Employee{
 
     @OneToMany(() => LeaveBalance, (lb) => lb.employees)
     leaveBalances: LeaveBalance[];
+
+    @OneToMany(()=>LeaveApp, (la)=>(la.approver))
+    emp: LeaveApp[];
 }
