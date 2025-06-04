@@ -148,20 +148,14 @@ const HRLeaveRequests: React.FC = () => {
                             >
                               Confirm Reject
                             </button>
-                            <button
-                              onClick={cancelReject}
-                              className="cancel-reject-btn"
-                            >
+                            <button onClick={cancelReject} className="cancel-reject-btn" >
                               Cancel
                             </button>
                           </div>
                         </div>
                       ) : (
                         <>
-                          <button
-                            onClick={() => handleApprove(request.lr_id, "approve")}
-                            className="approve-btn"
-                          >
+                          <button onClick={() => handleApprove(request.lr_id, "approve")} className="approve-btn" >
                             Approve
                           </button>
                           <button

@@ -2,8 +2,6 @@
 .calendar-container {
     margin:20px;
     margin-left: 290px;
-    /* margin: 2rem auto; */
-
     padding: 1rem;
     max-width: 100%;
     max-height:100%;
@@ -13,7 +11,6 @@
     overflow :hidden;
   }
   
-  /* Adjust header (Today, Back, Next, etc.) */
   .rbc-toolbar {
     display: flex;
     flex-direction: column;
@@ -29,7 +26,6 @@
     }
   }
   
-  /* Style event items */
   .rbc-event {
     padding: 4px;
     border-radius: 6px;
@@ -37,7 +33,6 @@
     font-size: 0.85rem;
   }
   
-  /* Improve agenda view spacing */
   .rbc-agenda-content td {
     padding: 8px 12px;
   }

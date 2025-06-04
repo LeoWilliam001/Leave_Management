@@ -1,0 +1,174 @@
+
+.apply-leave-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 100%;
+    box-shadow: none; 
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+  
+  .apply-leave-form .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .apply-leave-form .close-button:hover {
+    color: #333;
+  }
+  
+  .apply-leave-form h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+  }
+  
+  .apply-form-group {
+    display: flex;
+    align-items: flex-start; 
+    flex-wrap: wrap; 
+    gap: 8px; 
+  }
+  
+  .apply-form-group label {
+    width: 120px;
+    min-width: 100px;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.95rem;
+    flex-shrink: 0; 
+  }
+  
+  .select-with-balance-wrapper {
+    display: flex;
+    flex: 1; 
+    align-items: center;
+    gap: 8px;
+    min-width: 150px;
+    flex-wrap: wrap;
+  }
+  
+  .apply-form-group input,
+  .apply-form-group select,
+  .apply-form-group textarea {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+    height: 32px; 
+  }
+  
+  .apply-form-group select {
+      flex-grow: 1;
+      min-width: 100px;
+  }
+  
+  .apply-form-group textarea {
+    flex: 1; 
+    min-height: 40px; 
+    max-height: 100px; 
+    resize: vertical;
+    height: auto; 
+  }
+  
+  
+  .apply-form-group input:focus,
+  .apply-form-group select:focus,
+  .apply-form-group textarea:focus {
+    border-color: #258acd;
+    outline: none;
+  }
+  
+  .apply-error-message {
+    color: red;
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: -8px;
+  }
+  
+  .apply-balance-info {
+    margin-left: 0;
+    margin-top: 0;
+    color: #258acd;
+    font-size: 0.85rem;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  
+  .apply-form-group .leave-count-display {
+    margin-left: 10px;
+    color: #444;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .apply-modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .apply-submit-button {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+    background-color: #258acd;
+    color: white;
+  }
+  
+  .apply-submit-button:hover {
+    background-color: #1a6a9b;
+  }
+  
+  @media (max-width: 768px) {
+    .apply-leave-form {
+      padding: 15px;
+      margin: 5px;
+    }
+  
+    .apply-form-group {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .apply-form-group label {
+      width: 100%;
+      margin-bottom: 3px;
+    }
+  
+    .apply-form-group input,
+    .apply-form-group textarea {
+      width: 100%; 
+      min-width: unset;
+    }
+    .select-with-balance-wrapper {
+        width: 100%;
+        min-width: unset;
+    }
+  
+    .apply-balance-info {
+      margin-left: 0;
+      margin-top: 0;
+    }
+  }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/LeaveRequest.css"; // Import CSS for styling
+import "../../styles/LeaveRequest.css"; 
 import Sidebar from "../employee/EmpSideBar";
 
 interface LeaveRequest {
@@ -56,7 +56,6 @@ const LeaveRequest: React.FC = () => {
           throw new Error("Failed to fetch leave requests");
         }
   
-        // Merge and remove duplicates if needed
         const combined = [...managerData, ...directorData];
         const uniqueRequests = Array.from(
           new Map(combined.map(item => [item.lr_id, item])).values()
@@ -118,10 +117,10 @@ const LeaveRequest: React.FC = () => {
               <th>Start Date</th>
               <th>End Date</th>
               <th>Reason</th>
-              <th>Status</th>
               <th>Manager Approval</th>
               <th>HR Approval</th>
               <th>Dir Approval</th>
+              <th>Status</th>
               <th>Approval</th>
             </tr>
           </thead>
@@ -138,7 +137,7 @@ const LeaveRequest: React.FC = () => {
                 <td className={getStatusClass(request.dir_approval)}>{request.dir_approval}</td>
                 <td className={getStatusClass(request.status)}>{request.status}</td>
                 <td>
-                {(request.manager_approval === "Pending" && request.employee.manager_id.toString() === manager_id) ? (
+                {(request.manager_approval === "Pending" && request.status!=="Cancelled" && request.employee.manager_id.toString() === manager_id) ? (
                   <>
                     <button
                       onClick={() => handleApprove(request.lr_id, "approve")}
@@ -155,16 +154,10 @@ const LeaveRequest: React.FC = () => {
                   </>
                 ) : request.dir_approval === "Pending" && request.employee.dir_id.toString() === manager_id ? (
                   <>
-                    <button
-                      onClick={() => handleApprove(request.lr_id, "approve")}
-                      className="approve-btn"
-                    >
+                    <button onClick={() => handleApprove(request.lr_id, "approve")} className="approve-btn" >
                       Approve (Dir)
                     </button>
-                    <button
-                      onClick={() => handleApprove(request.lr_id, "reject")}
-                      className="reject-btn"
-                    >
+                    <button onClick={() => handleApprove(request.lr_id, "reject")} className="reject-btn" >
                       Reject (Dir)
                     </button>
                   </>

@@ -131,6 +131,8 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Manager has already approved/rejected this request" });
       }
       leaveApproval.decision = action ==="approve" ? LAStatus.Approved : LAStatus.Rejected;
+      leaveApproval.comment=action !=="approve" ? rejection_reason:"";
+      leaveApproval.actionAt = new Date();
       leaveRequest.manager_approval = action === "approve" ? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     }
     // Check if the approver is the HR
@@ -146,6 +148,7 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
       }
       leaveApproval.decision = action ==="approve" ? LAStatus.Approved : LAStatus.Rejected;
       leaveApproval.comment=action !=="approve" ? rejection_reason:"";
+      leaveApproval.actionAt = new Date();
       leaveRequest.hr_approval = action === "approve" ? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     } 
 
@@ -164,7 +167,8 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
         return res.status(400).json({message: "Director has already approved this request"});
       }
       leaveApproval.decision = action ==="approve" ? LAStatus.Approved : LAStatus.Rejected;
-      
+      leaveApproval.comment=action !=="approve" ? rejection_reason:"";
+      leaveApproval.actionAt = new Date();
       leaveRequest.dir_approval=action==="approve"? ApprovalStatus.Approved : ApprovalStatus.Rejected;
     }
     
@@ -203,9 +207,9 @@ export const approveLeaveRequest = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Leave balance not found for employee" });
       }
     
-      if (leaveBal.bal_days < leaveRequest.num_days) {
-        return res.status(400).json({ message: "Insufficient leave balance" });
-      }
+      // if (leaveBal.bal_days < leaveRequest.num_days) {
+      //   return res.status(400).json({ message: "Insufficient leave balance" });
+      // }
     
       leaveBal.bal_days += leaveRequest.num_days;
       await leaveBalRepo.save(leaveBal);

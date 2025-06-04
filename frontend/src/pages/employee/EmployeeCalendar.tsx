@@ -6,7 +6,6 @@ import { enIN } from "date-fns/locale";
 import "../../styles/BigCalendar.css";
 import Sidebar from "../employee/EmpSideBar";
 import AdminSide from "../admin/AdminSideBar";
-// import { useNavigate } from "react-router-dom";
 import HolidayForm from "../admin/CreateHoliday";
 
 
@@ -17,7 +16,7 @@ const locales = {
 const localizer = dateFnsLocalizer({
   format,
   parse,
-  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 0 }),
   getDay,
   locales,
 });
@@ -37,7 +36,6 @@ const EmployeeCalendar: React.FC = () => {
 
   const role = localStorage.getItem('role');
   const emp_id = localStorage.getItem('emp_id');
-  // const navigate=useNavigate();
 
 
   useEffect(() => {
@@ -49,7 +47,6 @@ const EmployeeCalendar: React.FC = () => {
       const holidayRes = await fetch("http://localhost:3000/api/leave/emp/holidays");
       const holidayData = await holidayRes.json();
 
-      // Generate week offs for current month
       const generateWeekendEvents = (year: number): Event[] => {
         const weekends: Event[] = [];
         const d = new Date(year, 0, 1); // Jan 1
@@ -73,8 +70,6 @@ const EmployeeCalendar: React.FC = () => {
       const now = new Date();
       const weekOffEvents = generateWeekendEvents(now.getFullYear());
 
-
-      // Exclude leaves on weekends
       const leaveEvents: Event[] = [];
 
       approvedLeaves.forEach((item: any) => {
@@ -118,14 +113,7 @@ const EmployeeCalendar: React.FC = () => {
     else if (event.type === "holiday") backgroundColor = "#fcd34d";
 
     return {
-      style: {
-        backgroundColor,
-        borderRadius: "6px",
-        color: "#000",
-        border: "0px",
-        display: "block",
-        fontWeight: "bold",
-      },
+      style: { backgroundColor, borderRadius: "6px", color: "#000", border: "0px", display: "block", fontWeight: "bold", },
     };
   };
 

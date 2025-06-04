@@ -1,5 +1,40 @@
-/* EmpDash.css */
 
+
+.dashboard-header-controls {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 20px; 
+  flex-wrap: wrap; 
+  gap: 15px; 
+}
+
+.dashboard-buttons-group {
+    display: flex;
+    gap: 10px; 
+    flex-wrap: wrap; 
+}
+
+.profile-button {
+  margin-left: 0;
+  margin-bottom: 0; 
+}
+
+.dashboard-heading {
+  margin-bottom: 0; 
+  flex-shrink: 0; 
+}
+
+@media (max-width: 768px) {
+  .dashboard-header-controls {
+    flex-direction: column;
+    align-items: flex-start; 
+  }
+
+  .dashboard-heading {
+    margin-bottom: 15px;
+  }
+}
 * {
   box-sizing: border-box;
   padding: 0%;
@@ -7,12 +42,11 @@
 }
 
 body {
-  background-color: #F5F5F5; /* Background */
+  background-color: #F5F5F5; 
   font-family: 'Segoe UI', sans-serif;
-  color: #212121; /* Text */
+  color: #212121;
 }
 
-/* Existing Styles */
 .profile-button {
   padding: 7px 12px 5px 12px;
   border-radius: 8px;
@@ -181,7 +215,7 @@ body {
 .pass-modal,
 .employee-detail-modal-content { /* Added .employee-detail-modal-content */
   background-color: white;
-  padding: 30px; /* Increased padding */
+  padding: 20px; /* Increased padding */
   border-radius: 12px; /* Slightly more rounded */
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4); /* Stronger shadow */
   width: 90%;
@@ -216,11 +250,11 @@ body {
 }
 
 .toggle-password {
-  padding: 8px 12px; /* Increased padding */
+  padding: 8px 12px; 
   background-color: #3498db;
   color: white;
   border: none;
-  border-radius: 8px; /* More rounded */
+  border-radius: 8px; 
   cursor: pointer;
   font-size: 0.9rem;
   transition: background-color 0.3s ease;
@@ -230,27 +264,27 @@ body {
   background-color: #258acd;
 }
 
-.set-pass, .cancel-pass { /* Combined for consistency */
-  padding: 10px 20px; /* More padding */
+.set-pass, .cancel-pass { 
+  padding: 10px 20px; 
   border: none;
-  border-radius: 8px; /* More rounded */
+  border-radius: 8px; 
   font-weight: 600;
   cursor: pointer;
-  font-size: 1rem; /* Slightly larger font */
+  font-size: 1rem; 
   transition: background-color 0.3s ease;
 }
 
 .set-pass {
-  background-color: #258acd; /* Darker blue */
+  background-color: #258acd; 
   color: white;
 }
 
 .set-pass:hover {
-  background-color: #1a6a9b; /* Even darker on hover */
+  background-color: #1a6a9b; 
 }
 
 .cancel-pass {
-  background-color: #e53935; /* Error color */
+  background-color: #e53935; 
   color: white;
 }
 
@@ -261,12 +295,12 @@ body {
 .modal-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px; /* Increased gap */
-  margin-top: 25px; /* More top margin */
+  gap: 15px; 
+  margin-top: 25px; 
 }
 
 
-.team-leave-table { /* Assuming this is for an actual table, not cards */
+.team-leave-table { 
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
@@ -280,9 +314,9 @@ body {
 }
 
 .leave-balance-cards {
-  margin-left: 0; /* Remove specific margin, rely on parent flex gap */
+  margin-left: 0; 
   display: flex;
-  gap: 1.5rem; /* Adjusted gap */
+  gap: 1.5rem; 
   flex-wrap: wrap;
   margin-bottom: 2rem;
 }
@@ -293,26 +327,26 @@ body {
   border-radius: 8px;
   min-width: 200px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  flex: 1; /* Allow cards to grow */
-  min-width: 180px; /* Ensure they don't shrink too much */
+  flex: 1; 
+  min-width: 180px; 
 }
 
 
 .leave-form {
   background-color: #ffffff;
-  padding: 25px; /* More padding */
+  padding: 25px; 
   border-radius: 12px;
   width: 100%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Increased gap */
+  gap: 15px; 
 }
 
 .leave-form h2 {
   text-align: center;
   color: #333;
-  margin-bottom: 20px; /* Added margin */
+  margin-bottom: 20px; 
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
 }
@@ -320,13 +354,13 @@ body {
 .leave-form .form-group {
   display: flex;
   align-items: center;
-  flex-wrap: wrap; /* Allow wrapping on small screens */
-  gap: 10px; /* Gap between label and input */
+  flex-wrap: wrap; 
+  gap: 10px; 
 }
 
 .leave-form label {
   width: 150px;
-  min-width: 120px; /* Ensure label doesn't shrink too much */
+  min-width: 120px; 
   font-weight: 600;
   color: #444;
 }
@@ -335,17 +369,17 @@ body {
 .leave-form select,
 .leave-form textarea {
   flex: 1;
-  padding: 10px 12px; /* Consistent padding */
+  padding: 10px 12px; 
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  min-width: 180px; /* Ensure inputs don't get too small */
+  min-width: 180px; 
   transition: border-color 0.3s;
 }
 
 .leave-form textarea {
-  min-height: 80px; /* Increased min-height */
-  resize: vertical; /* Only allow vertical resize */
+  min-height: 80px; 
+  resize: vertical; 
 }
 
 .leave-form input:focus,
@@ -359,7 +393,7 @@ body {
   color: red;
   font-size: 0.9rem;
   text-align: center;
-  margin-top: -10px; /* Pull up closer to input */
+  margin-top: -10px; 
 }
 
 .balance-info {
@@ -375,7 +409,6 @@ body {
   font-weight: 500;
 }
 
-/* Original modal overlay - combined with new .modal-overlay */
 .modaloverlay {
   position: fixed;
   top: 0;
@@ -383,17 +416,16 @@ body {
   right: 0;
   bottom: 0;
   background: rgba(0,0,0,0.5);
-  display: flex; /* Changed from grid to flex for consistency */
+  display: flex; 
   justify-content: center;
   align-items: center;
   z-index: 100;
 }
 
-/* Original password modal - combined with new .pass-modal */
 .pass-modal {
   background: white;
   width: 90%;
-  max-width: 450px; /* Adjusted max-width */
+  max-width: 450px; 
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -407,14 +439,14 @@ body {
 
 .leave-section-container {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping for responsiveness */
+  flex-wrap: wrap; 
   gap: 2rem;
   margin-top: 2rem;
 }
 
 .leave-balances-section {
   flex: 2;
-  min-width: 300px; /* Ensure minimum width before wrapping */
+  min-width: 300px; 
   background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
@@ -434,8 +466,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  /* Removed fixed max-height and overflow-y:auto here directly */
-  /* This overflow is now handled by .team-leave-container */
 }
 
 .team-leave-container {
@@ -449,31 +479,31 @@ body {
   align-items: center;
   gap: 1rem;
   background-color: #f4f4f4;
-  padding: 0.8rem 1rem; /* Adjusted padding */
+  padding: 0.8rem 1rem;
   border-radius: 8px;
-  min-width: 250px; /* Slightly larger min-width */
+  min-width: 250px; 
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Added box-shadow transition */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .employee-initial-circle {
-  width: 35px; /* Increased size */
-  height: 35px; /* Increased size */
+  width: 35px; 
+  height: 35px; 
   border-radius: 50%;
-  background-color: #3498db; /* Consistent blue */
+  background-color: #3498db; 
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 1.2rem; /* Larger font */
-  flex-shrink: 0; /* Prevent shrinking */
+  font-size: 1.2rem;
+  flex-shrink: 0; 
 }
 
 .employee-name {
-  font-weight: 600; /* Bolder name */
+  font-weight: 600; 
   color: #333;
-  flex-grow: 1; /* Allow name to take available space */
+  flex-grow: 1; 
 }
 
 .team-leave-card:hover {
@@ -499,14 +529,13 @@ body {
   background: #1a6a9b;
 }
 
-/* --- NEW STYLES BELOW THIS LINE --- */
 
 .team-members-section {
   background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-  margin-top: 30px; /* Space from sections above */
+  margin-top: 30px; 
 }
 
 .team-members-section h2 {
@@ -519,22 +548,22 @@ body {
 .team-members-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px; /* Gap between team member cards */
-  justify-content: flex-start; /* Align cards to the start */
+  gap: 20px; 
+  justify-content: flex-start;
 }
 
 .team-member-card {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Space out content and button */
+  justify-content: space-between;
   padding: 15px;
-  background-color: #f0faff; /* Light blue background, similar to existing light tones */
+  background-color: #f0faff; 
   border: 1px solid #e0f0ff;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  width: calc(33.33% - 14px); /* Approx 3 cards per row with 20px gap */
-  min-width: 280px; /* Ensure cards don't get too small on smaller screens */
-  box-sizing: border-box; /* Include padding/border in width calculation */
+  width: calc(33.33% - 14px); 
+  min-width: 220px;
+  box-sizing: border-box; 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -544,22 +573,21 @@ body {
 }
 
 .team-member-card .employee-initial-circle {
-  /* Inherits from existing, but maybe adjust size for these cards if desired */
-  width: 40px; /* Slightly larger for team member cards */
+  width: 40px;
   height: 40px;
   font-size: 1.4rem;
-  background-color: #258acd; /* Darker blue, distinct from leave initials */
+  background-color: #258acd; 
 }
 
 .team-member-card .employee-info {
-  flex-grow: 1; /* Allows name and role to take available space */
-  margin-left: 15px; /* Space from initial circle */
+  flex-grow: 1; 
+  margin-left: 15px; 
 }
 
 .team-member-card .employee-name {
-  font-weight: 700; /* Make name bolder */
+  font-weight: 700; 
   color: #333;
-  margin-bottom: 3px; /* Space between name and role */
+  margin-bottom: 3px; 
 }
 
 .team-member-card .employee-role {
@@ -568,25 +596,23 @@ body {
 }
 
 .view-employee-button {
-  background-color: #3498db; /* Primary blue, consistent with other buttons */
+  background-color: #3498db; 
   color: white;
   border: none;
-  padding: 8px 15px; /* Comfortable padding */
-  border-radius: 5px; /* Slightly less rounded than main buttons */
+  padding: 8px 15px; 
+  border-radius: 5px; 
   cursor: pointer;
   font-size: 0.9rem;
   transition: background-color 0.3s ease;
-  flex-shrink: 0; /* Prevent button from shrinking */
+  flex-shrink: 0;
 }
 
 .view-employee-button:hover {
-  background-color: #258acd; /* Darker blue on hover */
+  background-color: #258acd; 
 }
 
-/* Employee Detail Modal Specific Styling */
 .employee-detail-modal-content {
-  /* Inherits general modal-content styles */
-  max-width: 650px; /* Allow more width for detailed info */
+  max-width: 650px; 
 }
 
 .employee-detail-modal-content p {
@@ -598,61 +624,61 @@ body {
 
 .employee-detail-modal-content strong {
   display: inline-block;
-  min-width: 120px; /* Align key-value pairs */
+  min-width: 120px;
   color: #212121;
 }
 
-/* Media Queries for Responsiveness */
+
 @media (max-width: 1200px) {
   .team-member-card {
-    width: calc(50% - 10px); /* Two cards per row with 20px gap */
+    width: calc(50% - 10px); 
   }
 }
 
 @media (max-width: 768px) {
   .dashboard-main {
-    margin-left: 0.8em; /* Adjusted margin */
-    padding: 1.5rem; /* Reduced padding */
+    margin-left: 0.8em; 
+    padding: 1.5rem; 
   }
 
   .leave-section-container {
-    flex-direction: column; /* Stack sections vertically */
+    flex-direction: column; 
     gap: 1.5rem;
   }
 
   .leave-balances-section,
   .team-leave-section,
   .team-members-section {
-    min-width: unset; /* Remove min-width to allow full width */
+    min-width: unset;
     width: 100%;
   }
 
   .team-member-card {
-    width: 100%; /* One card per row */
+    width: 100%; 
     min-width: unset;
   }
 
   .modal-content,
   .pass-modal,
   .employee-detail-modal-content {
-    padding: 20px; /* Reduced padding for smaller screens */
-    margin: 10px; /* Add some margin from screen edges */
+    padding: 20px; 
+    margin: 10px; 
   }
 
   .leave-form .form-group {
-    flex-direction: column; /* Stack label and input */
+    flex-direction: column;
     align-items: flex-start;
   }
 
   .leave-form label {
-    width: 100%; /* Label takes full width */
-    margin-bottom: 5px; /* Space below label */
+    width: 100%; 
+    margin-bottom: 5px; 
   }
 
   .leave-form input,
   .leave-form select,
   .leave-form textarea {
-    width: 100%; /* Input takes full width */
+    width: 100%; 
     min-width: unset;
   }
 }

@@ -58,7 +58,6 @@ const CreateEmp: React.FC = () => {
       <Sidebar />
       <div className="content">
         <div className="card">
-          {/* X Button at top-right */}
           <button
             onClick={() => navigate("/admin_dash")}
             className="close-button"

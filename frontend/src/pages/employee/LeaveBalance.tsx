@@ -35,7 +35,7 @@ const LeaveBalanceChart: React.FC<LeaveBalanceChartProps> = ({ type, total, bala
   };
 
   return (
-    <div style={{ width: 170, height: 170 }}>
+    <div style={{ width: 155, height: 155 }}>
       <h4 style={{ textAlign: "center" }}>{type}</h4>
       <Doughnut data={data} options={options} />
     </div>

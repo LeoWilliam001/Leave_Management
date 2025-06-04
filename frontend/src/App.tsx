@@ -10,7 +10,6 @@ import HRLeaveRequests from "./pages/hr/HRLeaveRequest";
 import LeaveStatus from "./pages/employee/LeaveStatus";
 import AllEmployees from "./pages/admin/ViewEmployees";
 import CreateEmp from "./pages/admin/CreateEmployee";
-// import { Calendar } from "react-big-calendar";
 import EmployeeCalendar from "./pages/employee/EmployeeCalendar";
 import HolidayForm from "./pages/admin/CreateHoliday";
 
@@ -18,10 +17,8 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* Public Route */}
         <Route path="/" element={<LoginPage />} />
 
-        {/* Protected Routes */}
         <Route
           path="/admin_dash"
           element={

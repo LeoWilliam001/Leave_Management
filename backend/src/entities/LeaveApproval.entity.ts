@@ -26,8 +26,8 @@ export class LeaveApp {
     @Column({ type: 'text', nullable: true })
     comment: string;
   
-    @CreateDateColumn({ name: 'action_at', type: 'timestamp' })
-    actionAt: Timestamp;
+    @Column({ name: 'action_at',type:'timestamp', default:()=>'CURRENT_TIMESTAMP'})
+    actionAt: Date;
 
     @ManyToOne(() => LeaveRequest,(la)=>la.leaveApp)
     @JoinColumn({ name: 'lr_id' })

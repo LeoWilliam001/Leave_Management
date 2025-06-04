@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/EmpDash.css";
+import "../../styles/ApplyLeave.css";
 
 interface LeaveBalance {
   leave_type_id: number;
@@ -121,7 +121,7 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     }
 
     if (workingDays === null || workingDays <= 0) {
-      setError("The selected range includes only weekends/holidays.");
+      setError("The selected range is invalid.");
       return;
     }
 
@@ -151,6 +151,7 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       alert("Leave request submitted successfully!");
       resetForm();
+      onClose(); 
     } catch (err: any) {
       setError(err.message);
     }
@@ -174,18 +175,11 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <form onSubmit={handleLeave} className="leave-form">
-      {/* ❌ Close Button */}
+    <form onSubmit={handleLeave} className="apply-leave-form">
       <button
         type="button"
         onClick={onClose}
-        style={{
-          background: "transparent",
-          border: "none",
-          fontSize: "24px",
-          cursor: "pointer",
-          color: "#999"
-        }}
+        className="close-button"
         aria-label="Close"
         title="Close"
       >
@@ -194,67 +188,69 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       <h2>Apply for Leave</h2>
 
-      <div className="form-group">
-        <label>Leave Type</label>
-        <select
-          value={leaveType}
-          style={{ height: '35px' }}
-          onChange={(e) => setLeaveType(Number(e.target.value))}
-        >
-          <option value={0}>Select Type</option>
-          {leaveBalances.map((balance) => (
-            <option key={balance.leave_type_id} value={balance.leave_type_id}>
-              {balance.leaveType.type_of_leave}
-            </option>
-          ))}
-        </select>
-        {leaveType !== 0 && (
-          <span className="balance-info">
-            {getLeaveBalance(leaveType)} days
-          </span>
-        )}
+      <div className="apply-form-group">
+        <label htmlFor="leaveType">Leave Type</label> 
+        <div className="select-with-balance-wrapper"> 
+          <select
+            id="leaveType" 
+            value={leaveType}
+            onChange={(e) => setLeaveType(Number(e.target.value))}
+          >
+            <option value={0}>Select Type</option>
+            {leaveBalances.map((balance) => (
+              <option key={balance.leave_type_id} value={balance.leave_type_id}>
+                {balance.leaveType.type_of_leave}
+              </option>
+            ))}
+          </select>
+          {leaveType !== 0 && (
+            <span className="apply-balance-info">
+              {getLeaveBalance(leaveType)} days
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="form-group">
-        <label>Start Date</label>
+      <div className="apply-form-group">
+        <label htmlFor="startDate">Start Date</label> 
         <input
+          id="startDate"
           type="date"
           value={startDate}
-          style={{ height: '35px' }}
           onChange={(e) => setStartDate(e.target.value)}
         />
       </div>
 
-      <div className="form-group">
-        <label>End Date</label>
+      <div className="apply-form-group">
+        <label htmlFor="endDate">End Date</label> 
         <input
+          id="endDate"
           type="date"
           value={endDate}
-          style={{ height: '35px' }}
           onChange={(e) => setEndDate(e.target.value)}
         />
       </div>
 
       {workingDays !== null && (
-        <div className="form-group">
+        <div className="apply-form-group">
           <label>Leave Count</label>
-          <span>{workingDays} day{workingDays !== 1 ? 's' : ''}</span>
+          <span className="leave-count-display">{workingDays} day{workingDays !== 1 ? 's' : ''}</span>
         </div>
       )}
 
-      <div className="form-group">
-        <label>Reason</label>
+      <div className="apply-form-group">
+        <label htmlFor="reason">Reason</label> 
         <textarea
+          id="reason" 
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          style={{ height: "30px", width: "300px", padding:'5px' }}
         />
       </div>
 
-      {error && <p className="error-message">{error}</p>}
+      {error && <p className="apply-error-message">{error}</p>}
 
-      <div className="modal-buttons">
-        <button type="submit" className="set-pass">Submit</button>
+      <div className="apply-modal-buttons">
+        <button type="submit" className="apply-submit-button">Submit</button>
       </div>
     </form>
   );

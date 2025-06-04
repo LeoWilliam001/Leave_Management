@@ -12,7 +12,6 @@ export class LeaveService {
   private leaveBalRepo = AppDataSource.getRepository(LeaveBalance);
   private employeeRepo = AppDataSource.getRepository(Employee);
 
-  // Create a new leave request
   async createLeaveRequest(data: Partial<LeaveRequest>) {
     console.log(data);
     const employee = await this.employeeRepo.findOne({
@@ -76,14 +75,12 @@ export class LeaveService {
     return await this.leaveApprovalRepo.save(leaveApps);
   }
 
-  // Get all leave requests
   async getAllLeaveRequests() {
     return await this.leaveRequestRepo.find({
       relations: ["employee", "leaveType"],
     });
   }
 
-  // Get a leave request by ID
   async getLeaveRequestById(lr_id: number) {
     return await this.leaveRequestRepo.findOne({
       where: { lr_id },
@@ -91,7 +88,6 @@ export class LeaveService {
     });
   }
 
-  //Get leave requests by employee id
   async getLeaveRequestsByEmpId(emp_id: number) {
     const leaveRequestRepo = AppDataSource.getRepository(LeaveRequest);
     return await leaveRequestRepo.find({
@@ -101,7 +97,6 @@ export class LeaveService {
   };
 
 
-  // Get leave requests by manager
   async getLeaveRequestsByManager(manager_id: number) {
     const employees = await this.employeeRepo.find({
       where: { manager_id },
@@ -114,7 +109,7 @@ export class LeaveService {
     const employeeIds = employees.map((emp) => emp.emp_id);
 
     return await this.leaveRequestRepo.find({
-      where: { emp_id: In(employeeIds), manager_approval: In([ApprovalStatus.Pending]) },
+      where: { emp_id: In(employeeIds), manager_approval: In([ApprovalStatus.Pending]), status:In([LeaveStatus.Pending]) },
       relations: ["employee", "leaveType"],
     });
   }
@@ -140,7 +135,6 @@ export class LeaveService {
   }
 
   async getLeaveRequestsByHr(hr_id: number) {
-    // Fetch employees managed by the HR
     const employees = await this.employeeRepo.find({
       where: { hr_id },
     });
@@ -169,7 +163,6 @@ export class LeaveService {
   
     const whereConditions = [];
   
-    // Always include `id` in every `In` check
     whereConditions.push({
       manager_id: In(employee?.manager_id != null ? [id, employee.manager_id] : [id]),
     });
@@ -182,7 +175,6 @@ export class LeaveService {
       dir_id: In(employee?.dir_id != null ? [id, employee.dir_id] : [id]),
     });
   
-    // Always include self by emp_id
     whereConditions.push({ emp_id: id });
   
     const teamMembers = await employeeRepo.find({
