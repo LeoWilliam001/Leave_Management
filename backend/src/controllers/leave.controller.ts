@@ -5,6 +5,7 @@ import { AppDataSource } from "../data-source";
 import { ApprovalStatus, LeaveRequest, LeaveStatus } from "../entities/LeaveRequest.entity";
 import { Holiday } from "../entities/Holiday.entity";
 import { LeaveApp, ApprovalStatus as LAStatus } from "../entities/LeaveApproval.entity";
+import { LeaveBalance } from "../entities/LeaveBalance.entity";
 
 const leaveService = new LeaveService();
 
@@ -240,6 +241,9 @@ export const setCancelled=async(req:Request,res:Response)=>
 {
     try{
       const id=parseInt(req.params.id,10);
+      console.log("Raw body:", req.body);
+      const {emp_id,leave_type_id, num_days, start_date, end_date}=req.body;
+      console.log(emp_id+" "+leave_type_id+" "+num_days+" "+start_date+" "+end_date);
       if(isNaN(id))
       {
         return res.status(400).json({error:"Invalid ID"});
@@ -248,15 +252,48 @@ export const setCancelled=async(req:Request,res:Response)=>
       const lr=await lr_repo.findOne({
         where:{lr_id:id}
       });
-      if(lr.status===LeaveStatus.Pending || (lr.status===LeaveStatus.Approved && new Date(lr.start_date)>new Date()))
+      const bal_repo=AppDataSource.getRepository(LeaveBalance);
+      const bal=await bal_repo.findOne({
+        where:{emp_id:emp_id,leave_type_id:leave_type_id}
+      })
+
+      if(lr.status===LeaveStatus.Pending || (lr.status==LeaveStatus.Approved && new Date(lr.start_date)>new Date()))
       {
         console.log("This is correct");
         lr.status=LeaveStatus.Cancelled;
         const updatedStats=await lr_repo.save(lr);
+        bal.bal_days+=num_days;
+        await bal_repo.save(bal);
+        res.status(200).json(updatedStats);
+      }
+      else if(lr.status===LeaveStatus.Approved && new Date(lr.end_date)>new Date())
+      {
+        console.log("This is the most correct");
+        lr.status=LeaveStatus.Cancelled;
+        lr.end_date=new Date();
+        const updatedStats=await lr_repo.save(lr);
+        let count=0;
+        const holidayRepo=AppDataSource.getRepository(Holiday);
+        const holidays=await holidayRepo.find();
+        const Hdates = holidays.map(h => {
+          const dateObj = new Date(h.date); 
+          return dateObj.toISOString().split("T")[0];
+        });
+        for(let i=new Date();i<=new Date(end_date);i.setDate(i.getDate()+1))
+        {
+          const day = i.getDay();
+          const dateStr = i.toISOString().split("T")[0];
+          if (day !== 0 && day !== 6 && !Hdates.includes(dateStr)) {
+            count++;
+          }
+        }
+        console.log("This is the count "+ count);
+        bal.bal_days+=count;
+        await bal_repo.save(bal);
         res.status(200).json(updatedStats);
       }
       else{
-        return res.status(400).json({error: "You can cancel only if the starting date has not yet started"});
+        return res.status(400).json({error: "You can cancel only if the starting date has not yet ended"});
       }
     }
     catch(error)

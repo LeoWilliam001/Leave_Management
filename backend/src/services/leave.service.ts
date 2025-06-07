@@ -2,7 +2,7 @@ import { AppDataSource } from "../data-source";
 import { LeaveRequest } from "../entities/LeaveRequest.entity";
 import { Employee } from "../entities/Employee.entity";
 import { ApprovalStatus, LeaveStatus } from "../entities/LeaveRequest.entity";
-import { In } from "typeorm"; // Import the In operator
+import { In } from "typeorm"; 
 import { LeaveApp } from "../entities/LeaveApproval.entity";
 import { LeaveBalance } from "../entities/LeaveBalance.entity";
 

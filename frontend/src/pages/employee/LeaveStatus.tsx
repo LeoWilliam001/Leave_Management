@@ -19,11 +19,13 @@ interface LeaveApp{
 }
 interface LeaveRequest {
   lr_id: number;
+  emp_id:number;
   leave_type: number;
   start_date: string;
   end_date: string;
   reason: string;
   status: string;
+  num_days: number;
   req_at: Date;
   manager_approval: string;
   hr_approval: string;
@@ -80,13 +82,20 @@ const LeaveStatus: React.FC = () => {
       ? leaveRequests
       : leaveRequests.filter((req) => req.status === filterStatus);
 
-  const handleCancel=async(lr_id: number)=> {
+  const handleCancel=async(lr_id: number,request: LeaveRequest)=> {
     try{
       const response=await fetch(`http://localhost:3000/api/leave/request/cancel/${lr_id}`,{
         method:"PATCH",
         headers:{
           "Content-Type": "application/json",
-        }
+        },
+        body:JSON.stringify({
+          emp_id: request.emp_id,
+          leave_type_id: request.leave_type,
+          num_days: request.num_days,
+          start_date: request.start_date,
+          end_date: request.end_date
+        })
       });
       if(response.status==200)
       {
@@ -150,10 +159,10 @@ const LeaveStatus: React.FC = () => {
                 </button>
 
                 {(request.status === "Pending" || 
-                  (request.status === "Approved" && new Date(request.start_date) > new Date())) && (
+                  (request.status === "Approved" && new Date(request.end_date) > new Date())) && (
                     <button 
                       className="cancelbutton" 
-                      onClick={() => handleCancel(request.lr_id)}
+                      onClick={() => {handleCancel(request.lr_id,request);}}
                     >
                       Cancel
                     </button>
@@ -164,38 +173,50 @@ const LeaveStatus: React.FC = () => {
           ))}
         </div>
         {showModal && selectedRequest && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <button className="modal-close" onClick={closeModal}>❌</button>
-              <h3>Leave Request Details</h3>
-              <p><strong>Leave Type:</strong> {selectedRequest.leaveType.type_of_leave}</p>
-              <p><strong>Dates:</strong> {selectedRequest.start_date} to {selectedRequest.end_date}</p>
-              <p><strong>Reason:</strong> {selectedRequest.reason}</p>
-              <p><strong>Status:</strong> {selectedRequest.status}</p>
-              <p><strong>Requested At:</strong> {new Date(selectedRequest.req_at).toLocaleString()}</p>
-              <p><strong>Manager Approval:</strong> {selectedRequest.manager_approval}</p>
-              <p><strong>HR Approval:</strong> {selectedRequest.hr_approval}</p>
-              <p><strong>Director Approval:</strong> {selectedRequest.dir_approval}</p>
-              {selectedRequest.leaveApp && selectedRequest.leaveApp.length > 0 && (
-                <>
-                  <h4>Approval Trail</h4>
-                  <ul>
-                    {selectedRequest.leaveApp.map((approval,index) => (
-                      <li key={approval.la_id}>
-                        <p><strong>Level </strong>{index+1}</p>
-                        <p><strong>Approver ID:</strong> {approval.approver_id}</p>
-                        <p><strong>Decision:</strong> {approval.decision}</p>
-                        <p><strong>Comment:</strong> {approval.comment || "None"}</p>
-                        <p><strong>Action At:</strong> {new Date(approval.actionAt).toLocaleString()}</p>
-                        <hr />
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+    <div className="modal-overlay">
+        <div className="modal-content">
+            <button className="modal-close" onClick={closeModal}>❌</button>
+            <h3 className="modal-title">Leave Request Details</h3>
 
+            <div className="modal-details-grid">
+                <p><strong>Leave Type:</strong> {selectedRequest.leaveType?.type_of_leave || 'N/A'}</p>
+                <p><strong>Dates:</strong> {selectedRequest.start_date} to {selectedRequest.end_date}</p>
+                <p><strong>Reason:</strong> {selectedRequest.reason}</p>
+                <p><strong>Status:</strong> <span className={`leave-status ${selectedRequest.status}`}>{selectedRequest.status}</span></p>
+                <p><strong>Requested At:</strong> {new Date(selectedRequest.req_at).toLocaleString()}</p>
             </div>
-          </div>
+
+            <div className="modal-approvals-summary">
+                <p><strong>Manager Approval:</strong> <span className={`status-icon ${selectedRequest.manager_approval}`}>{selectedRequest.manager_approval === 'Approved' ? '✅' : selectedRequest.manager_approval === 'Rejected' ? '❌' : '🕒'}</span></p>
+                <p><strong>HR Approval:</strong> <span className={`status-icon ${selectedRequest.hr_approval}`}>{selectedRequest.hr_approval === 'Approved' ? '✅' : selectedRequest.hr_approval === 'Rejected' ? '❌' : '⏳'}</span></p>
+                <p><strong>Director Approval:</strong> <span className={`status-icon ${selectedRequest.dir_approval}`}>{selectedRequest.dir_approval === 'Approved' ? '✅' : selectedRequest.dir_approval === 'Rejected' ? '❌' : '⏳'}</span></p>
+            </div>
+
+            {selectedRequest.leaveApp && selectedRequest.leaveApp.length > 0 && (
+                <>
+                    <h4 className="approval-trail-title">Approval Hierarchy</h4>
+                    <ul className="approval-trail-list">
+                        {selectedRequest.leaveApp.map((approval, index) => (
+                            <li key={approval.la_id} className="approval-trail-item">
+                                <p><strong>Level {index + 1}:</strong></p>
+                                <p><strong>Approver ID:</strong> {approval.approver_id}</p>
+                                <p>
+                                    <strong>Decision:</strong>
+                                    <span className={`status-icon ${approval.decision}`}>
+                                        {approval.decision === 'Approved' ? '✅' : approval.decision === 'Rejected' ? '❌' : '🕒'}
+                                    </span>
+                                </p>
+                                <p><strong>Comment:</strong> {approval.comment || "None"}</p>
+                                <p><strong>Action At:</strong> {new Date(approval.actionAt).toLocaleString()}</p>
+                                {index < selectedRequest.leaveApp.length - 1 && <hr className="approval-trail-divider" />}
+                            </li>
+                        ))}
+                    </ul>
+                        </>
+                    )}
+
+                </div>
+            </div>
         )}
 
       </main>

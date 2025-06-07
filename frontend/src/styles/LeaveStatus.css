@@ -1,3 +1,4 @@
+/* Dashboard Wrapper */
 .dashboard-wrapper {
   display: flex;
   flex-direction: row;
@@ -5,6 +6,7 @@
   min-height: 96vh;
 }
 
+/* Dashboard Sidebar */
 .dashboard-sidebar {
   position: fixed;
   top: 0;
@@ -40,6 +42,7 @@
   background-color: #258acd;
 }
 
+/* Dashboard Main Content */
 .dashboard-main {
   position: absolute;
   top: 0;
@@ -67,6 +70,7 @@
   margin-bottom: 20px;
 }
 
+/* Status Filter Buttons */
 .status-button {
   display: flex;
   justify-content: center;
@@ -77,7 +81,7 @@
 
 .status-button button {
   padding: 8px 16px;
-  background-color: #FF6384;
+  background-color: #FF6384; /* Example color, adjust as needed */
   color: white;
   border: none;
   border-radius: 20px;
@@ -93,6 +97,7 @@
   transform: translateY(-2px);
 }
 
+/* Leave Status Cards Container */
 .leave-status-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -100,6 +105,7 @@
   margin-top: 20px;
 }
 
+/* Individual Leave Card */
 .leave-card {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -109,6 +115,7 @@
   transition: all 0.2s ease;
   position: relative;
   min-height: 180px;
+  cursor: pointer; /* Indicate it's clickable */
 }
 
 .leave-card:hover {
@@ -144,6 +151,7 @@
   margin-right: 8px;
 }
 
+/* Leave Status Badges */
 .leave-status {
   font-size: 0.85rem;
   font-weight: 600;
@@ -173,7 +181,8 @@
   text-decoration: line-through;
 }
 
-.cancelbutton {
+/* Cancel Button */
+.cancel-button {
   background-color: #e53935;
   color: white;
   border: none;
@@ -184,59 +193,174 @@
   transition: all 0.2s ease;
 }
 
-
 .cancel-button:hover {
   background-color: #c62828;
   transform: scale(1.05);
 }
 
-@media (max-width: 768px) {
-  .dashboard-main {
-    left: 0;
-    padding-top: 70px;
-  }
-  
-  .dashboard-sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
-  
-  .leave-status-container {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* --- Modal Styles --- */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 1000; /* Higher z-index to ensure it's on top */
 }
 
 .modal-content {
   background: white;
-  padding: 20px;
-  width: 400px;
-  max-width: 90%;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  padding: 25px;
+  width: 90%; /* Responsive width */
+  max-width: 550px; /* Medium size */
+  max-height: 80vh; /* Make it scrollable if content overflows */
+  overflow-y: auto; /* Enable vertical scrolling */
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   position: relative;
+  animation: fadeIn 0.3s ease-out; /* Simple fade-in animation */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .modal-close {
   position: absolute;
-  right: 10px;
-  top: 10px;
+  right: 15px;
+  top: 15px;
   border: none;
   background: transparent;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   cursor: pointer;
-  color: #e74c3c;
+  color: #616161; /* Darker grey for better visibility */
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #e74c3c; /* Red on hover */
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  color: #2c3e50; /* Darker blue/grey for heading */
+  margin-bottom: 20px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.modal-details-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column for smaller screens */
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-details-grid p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.modal-details-grid p strong {
+  color: #000;
+}
+
+.modal-approvals-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-approvals-summary p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.modal-approvals-summary p strong {
+  color: #000;
+}
+
+.approval-trail-title {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.approval-trail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.approval-trail-item {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.approval-trail-item p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.approval-trail-item p strong {
+  color: #222;
+}
+
+.approval-trail-divider {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+  margin: 15px 0;
+}
+
+/* Status Icons for Approvals */
+.status-icon {
+  margin-left: 8px;
+  font-size: 1.1em; /* Slightly larger icon */
+  vertical-align: middle;
+}
+
+/* Media Queries for Responsiveness */
+@media (min-width: 576px) {
+  .modal-details-grid,
+  .modal-approvals-summary {
+      grid-template-columns: 1fr 1fr; /* Two columns for larger screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-main {
+      left: 0;
+      padding-top: 70px;
+  }
+  
+  .dashboard-sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+  }
+  
+  .leave-status-container {
+      grid-template-columns: 1fr;
+  }
 }
