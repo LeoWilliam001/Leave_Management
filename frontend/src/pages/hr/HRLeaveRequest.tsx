@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../admin/AdminSideBar";
-import "../../styles/HRLeaveRequests.css"; 
+import "../../styles/HRLeaveRequests.css";
+import { useAuth } from "../../contexts/AuthContext"; // Assuming AuthContext is in the parent directory
 
 interface LeaveRequest {
   lr_id: number;
@@ -27,13 +28,20 @@ const HRLeaveRequests: React.FC = () => {
   const [rejectingRequestId, setRejectingRequestId] = useState<number | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>("");
 
-  const emp_id = localStorage.getItem("emp_id");
+  const { user, isLoading } = useAuth(); // Use the useAuth hook
+  const emp_id = user?.emp_id; // Get emp_id from the authenticated user
 
   useEffect(() => {
     const fetchLeaveRequests = async () => {
+      // Ensure emp_id (hrId) is available before fetching
+      if (emp_id === undefined) {
+        setError("HR ID not available. Please log in.");
+        return;
+      }
+
       try {
-        const emp = JSON.parse(localStorage.getItem("emp") || "{}");
-        const hrId = emp.id;
+        // Use emp_id from useAuth directly as hrId
+        const hrId = emp_id;
         const response = await fetch(`http://localhost:3000/api/leave/hr/${hrId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch leave requests");
@@ -45,10 +53,17 @@ const HRLeaveRequests: React.FC = () => {
       }
     };
 
-    fetchLeaveRequests();
-  }, []);
+    if (!isLoading) { // Only fetch once authentication state is known
+      fetchLeaveRequests();
+    }
+  }, [emp_id, isLoading]); // Add emp_id and isLoading as dependencies
 
   const handleApprove = async (lr_id: number, app: string) => {
+    if (emp_id === undefined) {
+      setError("Approver ID is missing. Cannot perform action.");
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3000/api/leave/approve/${lr_id}`, {
         method: "PATCH",
@@ -56,7 +71,7 @@ const HRLeaveRequests: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          approver_id: emp_id,
+          approver_id: emp_id, // Use emp_id from useAuth
           action: app,
           ...(app === "reject" && { rejection_reason: rejectionReason }),
         }),
@@ -70,10 +85,10 @@ const HRLeaveRequests: React.FC = () => {
       setLeaveRequests((prev) =>
         prev.map((req) =>
           req.lr_id === lr_id
-            ? { 
-                ...req, 
+            ? {
+                ...req,
                 hr_approval: app === "approve" ? "Approved" : "Rejected",
-                status: app === "approve" ? req.status : "Rejected" 
+                status: app === "approve" ? req.status : "Rejected"
               }
             : req
         )
@@ -95,6 +110,19 @@ const HRLeaveRequests: React.FC = () => {
     setRejectingRequestId(null);
     setRejectionReason("");
   };
+
+  // Optional: Add a loading state for the component itself
+  if (isLoading) {
+    return (
+      <div className="dashboard-wrapper">
+        <Sidebar />
+        <div className="leave-container">
+          <h2>HR Dashboard</h2>
+          <p>Loading HR leave requests...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-wrapper">

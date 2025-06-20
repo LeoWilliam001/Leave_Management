@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/EmpDash.css";
+import { useAuth } from "../../contexts/AuthContext"; // Assuming AuthContext is in the parent directory
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth(); // Use the logout function from AuthContext
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleLogout = () => {
-    localStorage.removeItem("emp_id");
-    localStorage.removeItem("token");
+    logout(); // Call the logout function from AuthContext
     navigate("/");
   };
 
@@ -20,7 +21,7 @@ const Sidebar: React.FC = () => {
     { to: "/hr/leaverequests", label: "View Leave Requests" },
     { to: "/", label: "Logout", isLogout: true },
   ];
-  
+
   return (
     <aside className="dashboard-sidebar" style={{ backgroundColor: "#3498db" }}>
       <h2 className="sidebar-title">HR</h2>

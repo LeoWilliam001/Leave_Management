@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/AdminDash.css"; 
+import "../../styles/AdminDash.css";
 import Sidebar from "./AdminSideBar";
 import ApplyLeave from "../employee/ApplyLeave";
-import LeaveBalanceChart from "../employee/LeaveBalance"; 
+import LeaveBalanceChart from "../employee/LeaveBalance";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface Employee {
   emp_id: number;
@@ -43,8 +44,11 @@ const HRDashboard: React.FC = () => {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [teamLeaveRequests, setTeamLeaveRequests] = useState<any[]>([]); // Use 'any' for now, or define a more specific interface for leave requests
   const [leaveBalances, setLeaveBalances] = useState<any[]>([]); // State for leave balances
-  const name = localStorage.getItem("name");
-  const emp_id = localStorage.getItem("emp_id");
+
+  // Use the useAuth hook to get the authenticated user's data
+  const { user } = useAuth();
+  const name = user?.name;
+  const emp_id = user?.emp_id;
 
   useEffect(() => {
     const fetchAllData = async () => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/ApplyLeave.css";
+import { useAuth } from "../../contexts/AuthContext"; // Import useAuth
 
 interface LeaveBalance {
   leave_type_id: number;
@@ -18,11 +19,23 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [leaveBalances, setLeaveBalances] = useState<LeaveBalance[]>([]);
   const [error, setError] = useState("");
   const [workingDays, setWorkingDays] = useState<number | null>(null);
-  const emp_id = localStorage.getItem("emp_id");
-  console.log(emp_id);
+
+  const { user: currentUser, isLoading: authLoading } = useAuth(); // Use useAuth hook
+  const emp_id = currentUser?.emp_id; // Get emp_id from user object
+
+  // Handle loading state
+  if (authLoading) {
+    return <div>Loading leave application form...</div>;
+  }
+
+  if (!currentUser) {
+    return <div className="apply-leave-form">Error: User not logged in.</div>;
+  }
 
   useEffect(() => {
     const fetchHolidaysAndBalances = async () => {
+      if (!emp_id) return; 
+
       try {
         const holidaysResponse = await fetch("http://localhost:3000/api/leave/emp/holidays");
         const holidaysData = await holidaysResponse.json();
@@ -42,11 +55,11 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     };
 
     fetchHolidaysAndBalances();
-  }, [emp_id]);
+  }, [emp_id]); 
 
   useEffect(() => {
     const checkClashingLeavesAndCalculate = async () => {
-      if (startDate && endDate) {
+      if (startDate && endDate && emp_id) { 
         try {
           const res = await fetch("http://localhost:3000/api/leave/clashing", {
             method: "POST",
@@ -77,7 +90,7 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     };
 
     checkClashingLeavesAndCalculate();
-  }, [startDate, endDate, holidays]);
+  }, [startDate, endDate, holidays, emp_id]); // Dependency on emp_id
 
   const calculateWorkingDays = () => {
     if (!startDate || !endDate) return;
@@ -151,7 +164,7 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       alert("Leave request submitted successfully!");
       resetForm();
-      onClose(); 
+      onClose();
     } catch (err: any) {
       setError(err.message);
     }
@@ -189,10 +202,10 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <h2>Apply for Leave</h2>
 
       <div className="apply-form-group">
-        <label htmlFor="leaveType">Leave Type</label> 
-        <div className="select-with-balance-wrapper"> 
+        <label htmlFor="leaveType">Leave Type</label>
+        <div className="select-with-balance-wrapper">
           <select
-            id="leaveType" 
+            id="leaveType"
             value={leaveType}
             onChange={(e) => setLeaveType(Number(e.target.value))}
           >
@@ -212,7 +225,7 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </div>
 
       <div className="apply-form-group">
-        <label htmlFor="startDate">Start Date</label> 
+        <label htmlFor="startDate">Start Date</label>
         <input
           id="startDate"
           type="date"
@@ -222,7 +235,7 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </div>
 
       <div className="apply-form-group">
-        <label htmlFor="endDate">End Date</label> 
+        <label htmlFor="endDate">End Date</label>
         <input
           id="endDate"
           type="date"
@@ -239,9 +252,9 @@ const ApplyLeave: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       )}
 
       <div className="apply-form-group">
-        <label htmlFor="reason">Reason</label> 
+        <label htmlFor="reason">Reason</label>
         <textarea
-          id="reason" 
+          id="reason"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
         />

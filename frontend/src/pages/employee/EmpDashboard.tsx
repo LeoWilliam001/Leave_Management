@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/EmpDash.css"; 
+import "../../styles/EmpDash.css";
 import Sidebar from "./EmpSideBar";
 import ApplyLeave from "./ApplyLeave";
 import LeaveBalanceChart from "./LeaveBalance";
+import { useAuth } from "../../contexts/AuthContext"; 
 
 interface Department {
   dept_id: number;
@@ -26,30 +27,54 @@ interface Employee {
   dir_id: number | null;
   address: string;
   phno: string;
-  manager?: Employee | null; 
-  hr?: Employee | null; 
+  manager?: Employee | null;
+  hr?: Employee | null;
   department: Department;
   role: Role;
 }
 
 const EmployeeDashboard: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [applyLeave, setApplyLeave] = useState(false);
+  const { user: employee, isLoading: authLoading } = useAuth(); 
+  const [showPasswordModal, setShowPasswordModal] = useState(false); 
+  const [applyLeaveModal, setApplyLeaveModal] = useState(false); 
   const [showPassword, setShowPassword] = useState(false);
   const [existingPassword, setExistingPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [teamLeaveRequests, setTeamLeaveRequests] = useState([]);
   const [leaveBalances, setLeaveBalances] = useState([]);
-  const [employee, setEmployee] = useState<Employee | null>(null);
-  const [teamMembers, setTeamMembers] = useState<Employee[]>([]); 
-  const [selectedEmployeeDetail, setSelectedEmployeeDetail] =
-    useState<Employee | null>(null);
+  const [teamMembers, setTeamMembers] = useState<Employee[]>([]);
+  const [selectedEmployeeDetail, setSelectedEmployeeDetail] =useState<Employee | null>(null);
 
-  const emp_id = localStorage.getItem("emp_id");
+  const emp_id = employee?.emp_id;
+
+  const EmployeeDetailModal: React.FC<{ employee: Employee; onClose: () => void }> = ({
+    employee,
+    onClose,
+  }) => {
+    return (
+      <div className="modal-overlay">
+        <div className="employee-detail-modal-content">
+          <h2>Employee Details</h2>
+          <p><strong>Name:</strong> {employee.name}</p>
+          <p><strong>Employee ID:</strong> {employee.emp_id}</p>
+          <p><strong>Email:</strong> {employee.email_id}</p>
+          <p><strong>Age:</strong> {employee.age}</p>
+          <p><strong>Phone:</strong> {employee.phno}</p>
+          <p><strong>Address:</strong> {employee.address}</p>
+          <p><strong>Department:</strong> {employee.department?.dept_name || 'N/A'}</p> 
+          <p><strong>Role:</strong> {employee.role?.role_name || 'N/A'}</p> 
+          {employee.manager && <p><strong>Manager:</strong> {employee.manager.name}</p>}
+          {employee.hr && <p><strong>HR:</strong> {employee.hr.name}</p>}
+          <button onClick={onClose} className="set-pass" style={{ marginTop: '20px' }} >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   const TeamLeaveCard: React.FC<{ name: string }> = ({ name }) => {
     const firstLetter = name ? name.charAt(0).toUpperCase() : "?";
-
     return (
       <div className="team-leave-card">
         <div className="employee-initial-circle">{firstLetter}</div>
@@ -77,89 +102,62 @@ const EmployeeDashboard: React.FC = () => {
     );
   };
 
-  const EmployeeDetailModal: React.FC<{ employee: Employee; onClose: () => void }> = ({
-    employee,
-    onClose,
-  }) => {
-    return (
-      <div className="modal-overlay">
-        <div className="employee-detail-modal-content">
-          <h2>Employee Details</h2>
-          <p><strong>Name:</strong> {employee.name}</p>
-          <p><strong>Employee ID:</strong> {employee.emp_id}</p>
-          <p><strong>Email:</strong> {employee.email_id}</p>
-          <p><strong>Age:</strong> {employee.age}</p>
-          <p><strong>Phone:</strong> {employee.phno}</p>
-          <p><strong>Address:</strong> {employee.address}</p>
-          <p><strong>Department:</strong> {employee.department.dept_name}</p>
-          <p><strong>Role:</strong> {employee.role.role_name}</p>
-          {employee.manager && <p><strong>Manager:</strong> {employee.manager.name}</p>}
-          {employee.hr && <p><strong>HR:</strong> {employee.hr.name}</p>}
-          <button onClick={onClose} className="set-pass" style={{ marginTop: '20px' }} >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-
   useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        if (!emp_id) {
-          console.warn("emp_id not found in localStorage. Cannot fetch data.");
-          return;
-        }
+    const fetchRelatedData = async () => {
+      if (!employee || authLoading) {
+        return;
+      }
 
-        // Fetch Leave Balance
-        const balanceRes = await fetch(`http://localhost:3000/api/bal/getbal/${emp_id}`);
+      try {
+        console.log("Balance area "+employee.emp_id);
+        const balanceRes = await fetch(`http://localhost:3000/api/bal/getbal/${employee.emp_id}`);
         const balanceData = await balanceRes.json();
         if (balanceRes.ok) {
           setLeaveBalances(balanceData.balances);
         } else {
           console.error("Failed to fetch leave balances:", balanceData.error);
         }
+      } catch (err) {
+        console.error("Error fetching leave balances:", err);
+      }
 
-        // Fetch Team Leave Requests
-        const teamLeaveRes = await fetch(`http://localhost:3000/api/leave/myteamleave/${emp_id}`);
+      try {
+        console.log("Teamleave "+employee.emp_id);
+        const teamLeaveRes = await fetch(`http://localhost:3000/api/leave/myteamleave/${employee.emp_id}`);
         const teamLeaveData = await teamLeaveRes.json();
         if (teamLeaveRes.ok) {
           setTeamLeaveRequests(teamLeaveData);
         } else {
           console.error("Failed to fetch team leave:", teamLeaveData.error);
         }
+      } catch (err) {
+        console.error("Error fetching team leave requests:", err);
+      }
 
-        // Fetch Current Employee Data
-        const emplRes = await fetch(`http://localhost:3000/api/users/${emp_id}`);
-        const employeeData = await emplRes.json();
-
-        if (emplRes.ok) {
-          setEmployee(employeeData);
-        } else {
-          console.error("Failed to fetch employee: ", employeeData.error);
-          setEmployee(null); 
-        }
-
-        const teamRes = await fetch(`http://localhost:3000/api/users/team/${emp_id}`);
+      try {
+        console.log("Teams "+employee.emp_id);
+        const teamRes = await fetch(`http://localhost:3000/api/users/team/${employee.emp_id}`);
         const teamData = await teamRes.json();
         if (teamRes.ok) {
-          const filteredTeam = teamData.filter((member: Employee) => member.emp_id !== parseInt(emp_id));
+          const filteredTeam = teamData.filter((member: Employee) => member.emp_id !== employee.emp_id);
           setTeamMembers(filteredTeam);
         } else {
           console.error("Failed to fetch team members:", teamData.error);
-          setTeamMembers([]);
         }
-
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching team members:", err);
       }
     };
 
-    fetchAllData();
-  }, [emp_id]); 
+    fetchRelatedData();
+  }, [employee, authLoading]);
+
 
   const handlePasswordChange = async () => {
+    if (!emp_id) {
+      alert("Employee ID not found. Cannot change password.");
+      return;
+    }
     try {
       const response = await fetch(`http://localhost:3000/api/users/editPass/${emp_id}`, {
         method: "PATCH",
@@ -170,44 +168,49 @@ const EmployeeDashboard: React.FC = () => {
       const data = await response.json();
       if (response.ok) {
         alert("Password updated successfully");
-        setShowModal(false);
+        setShowPasswordModal(false);
         setNewPassword("");
         setExistingPassword("");
       } else {
-        alert("Error: " + data.error);
+        alert("Error: " + (data.error || data.message || "Failed to update password."));
       }
     } catch (error) {
-      alert("Request failed.");
+      console.error("Password change request failed:", error);
+      alert("Request failed due to network error or server issue.");
     }
   };
+
+  if (authLoading || !employee) {
+    return <div>Loading Dashboard...</div>; 
+  }
 
   return (
     <>
       <Sidebar />
       <main className="dashboard-main">
         <div className="dashboard-header-controls">
-          <h1 className="dashboard-heading" style={{ fontFamily: 'Times New Roman' }}>Welcome {employee?.name}</h1>
+          <h1 className="dashboard-heading" style={{ fontFamily: 'Times New Roman' }}>Welcome {employee.name}</h1>
           <div className="dashboard-buttons-group">
-            <button className="profile-button" onClick={() => setShowModal(true)}>
+            <button className="profile-button" onClick={() => setShowPasswordModal(true)}>
               Edit Password
             </button>
 
-            {(employee) && (employee.manager_id !== null || employee.hr_id !== null || employee.dir_id !== null) && (
-              <button className="profile-button" onClick={() => setApplyLeave(true)}>
+            {(employee.manager_id !== null || employee.hr_id !== null || employee.dir_id !== null) && (
+              <button className="profile-button" onClick={() => setApplyLeaveModal(true)}>
                 Apply Leave
               </button>
             )}
           </div>
-        </div> 
-
-        <div className="employee-details">
-          <p><strong>Name:</strong> {employee?.name}</p>
-          {employee?.manager_id && employee?.manager && <p><strong>Manager:</strong> {employee?.manager?.name}</p>}
-          {employee?.hr_id && employee?.hr && <p><strong>HR:</strong> {employee?.hr?.name}</p>}
-          <p><strong>Role:</strong> {employee?.role.role_name}</p>
         </div>
 
-        {(employee) && (employee.manager_id !== null || employee.hr_id !== null || employee.dir_id !== null) && (
+        <div className="employee-details">
+          <p><strong>Name:</strong> {employee.name}</p>
+          {employee.manager && <p><strong>Manager:</strong> {employee.manager.name}</p>}
+          {employee.hr && <p><strong>HR:</strong> {employee.hr.name}</p>}
+          <p><strong>Role:</strong> {employee.role.role_name}</p>
+        </div>
+
+        {(employee.manager_id !== null || employee.hr_id !== null || employee.dir_id !== null) && (
           <div className="leave-section-container">
             <div className="leave-balances-section">
               <h2>Your Leave Balances</h2>
@@ -255,8 +258,7 @@ const EmployeeDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Password Change Modal */}
-        {showModal && (
+        {showPasswordModal && (
           <div className="modal-overlay">
             <div className="pass-modal">
               <h2>Change Password</h2>
@@ -285,16 +287,16 @@ const EmployeeDashboard: React.FC = () => {
               </div>
               <div className="modal-buttons">
                 <button onClick={handlePasswordChange} className="set-pass">Set Password</button>
-                <button onClick={() => setShowModal(false)} className="cancel-pass">Cancel</button>
+                <button onClick={() => setShowPasswordModal(false)} className="cancel-pass">Cancel</button>
               </div>
             </div>
           </div>
         )}
 
-        {applyLeave && (
+        {applyLeaveModal && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <ApplyLeave onClose={() => setApplyLeave(false)} />
+              <ApplyLeave onClose={() => setApplyLeaveModal(false)} />
             </div>
           </div>
         )}

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/LeaveRequest.css"; 
+import "../../styles/LeaveRequest.css";
 import Sidebar from "../employee/EmpSideBar";
+import { useAuth } from "../../contexts/AuthContext"; // Import useAuth
 
 interface LeaveRequest {
   lr_id: number;
   emp_id: number;
-  leave_type: string;
+  leave_type: string; // Assuming this is leaveType.type_of_leave from backend
   start_date: string;
   end_date: string;
   reason: string;
@@ -15,8 +16,8 @@ interface LeaveRequest {
   dir_approval: string;
   employee: {
     name: string;
-    manager_id: number;
-    dir_id: number;
+    manager_id: number; // Ensure this is number
+    dir_id: number;     // Ensure this is number
   };
 }
 
@@ -37,40 +38,61 @@ const getStatusClass = (status: string) => {
 const LeaveRequest: React.FC = () => {
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [error, setError] = useState("");
-  const manager_id = localStorage.getItem("emp_id");
+
+  const { user: currentUser, isLoading: authLoading } = useAuth(); // Use useAuth hook
+  const manager_id = currentUser?.emp_id; // Get manager_id from user object
+
+  // Handle loading state
+  if (authLoading) {
+    return <div>Loading leave requests...</div>;
+  }
+
+  // If user data isn't available after loading, or manager_id is missing
+  if (!currentUser || manager_id === undefined) {
+    return <div className="dashboard-wrapper">Error: Manager ID missing.</div>;
+  }
 
   useEffect(() => {
     const fetchLeaveRequests = async () => {
+      // Ensure manager_id is available before fetching
+      if (manager_id === undefined) return;
+
       try {
         const [managerRes, directorRes] = await Promise.all([
           fetch(`http://localhost:3000/api/leave/manager/${manager_id}`),
           fetch(`http://localhost:3000/api/leave/director/${manager_id}`)
         ]);
-  
+
         const [managerData, directorData] = await Promise.all([
           managerRes.json(),
           directorRes.json()
         ]);
-  
+
         if (!managerRes.ok || !directorRes.ok) {
           throw new Error("Failed to fetch leave requests");
         }
-  
+
         const combined = [...managerData, ...directorData];
+        // Filter out duplicate requests based on lr_id
         const uniqueRequests = Array.from(
           new Map(combined.map(item => [item.lr_id, item])).values()
         );
-  
+
         setLeaveRequests(uniqueRequests);
       } catch (err: any) {
         setError(err.message);
       }
     };
-  
+
     fetchLeaveRequests();
-  }, [manager_id]);
-  
+  }, [manager_id]); // Dependency on manager_id
+
   const handleApprove = async (lr_id: number, action: string) => {
+    if (manager_id === undefined) {
+      setError("Approver ID is missing.");
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3000/api/leave/approve/${lr_id}`, {
         method: "PATCH",
@@ -78,7 +100,7 @@ const LeaveRequest: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          approver_id: manager_id,
+          approver_id: manager_id, // Use manager_id (number) directly
           action: action,
         }),
       });
@@ -90,11 +112,25 @@ const LeaveRequest: React.FC = () => {
       }
 
       setLeaveRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          request.lr_id === lr_id
-            ? { ...request, manager_approval: action === "approve" ? "Approved" : "Rejected" }
-            : request
-        )
+        prevRequests.map((request) => {
+          // Determine which approval field to update based on who is approving
+          let updatedRequest = { ...request };
+          if (request.employee.manager_id === manager_id) { // Compare numbers directly
+            updatedRequest.manager_approval = action === "approve" ? "Approved" : "Rejected";
+          }
+          if (request.employee.dir_id === manager_id) { // Compare numbers directly
+            updatedRequest.dir_approval = action === "approve" ? "Approved" : "Rejected";
+          }
+          // Also update the overall status if all approvals are done or if rejected
+          if (action === "reject") {
+            updatedRequest.status = "Rejected";
+          } else if (updatedRequest.manager_approval === "Approved" &&
+                     updatedRequest.hr_approval === "Approved" &&
+                     updatedRequest.dir_approval === "Approved") {
+            updatedRequest.status = "Approved";
+          }
+          return updatedRequest;
+        })
       );
 
       alert(`Leave request ${action === "approve" ? "approved" : "rejected"} successfully!`);
@@ -105,7 +141,7 @@ const LeaveRequest: React.FC = () => {
 
   return (
     <div className="dashboard-wrapper">
-      <Sidebar /> 
+      <Sidebar />
       <div className="leavecontainer">
         <h2>Leave Requests</h2>
         {error && <p style={{ color: "#D32F2F", textAlign: "center" }}>{error}</p>}
@@ -137,7 +173,8 @@ const LeaveRequest: React.FC = () => {
                 <td className={getStatusClass(request.dir_approval)}>{request.dir_approval}</td>
                 <td className={getStatusClass(request.status)}>{request.status}</td>
                 <td>
-                {(request.manager_approval === "Pending" && request.status!=="Cancelled" && request.employee.manager_id.toString() === manager_id) ? (
+                {/* Manager approval section */}
+                {(request.manager_approval === "Pending" && request.status !== "Cancelled" && request.employee.manager_id === manager_id) ? (
                   <>
                     <button
                       onClick={() => handleApprove(request.lr_id, "approve")}
@@ -152,7 +189,8 @@ const LeaveRequest: React.FC = () => {
                       Reject
                     </button>
                   </>
-                ) : request.dir_approval === "Pending" && request.employee.dir_id.toString() === manager_id ? (
+                ) : // Director approval section (only if manager approved or manager not involved)
+                  (request.dir_approval === "Pending" && request.employee.dir_id === manager_id) ? (
                   <>
                     <button onClick={() => handleApprove(request.lr_id, "approve")} className="approve-btn" >
                       Approve (Dir)
@@ -163,10 +201,10 @@ const LeaveRequest: React.FC = () => {
                   </>
                 ) : (
                   <span className="status">
-                    {request.employee.manager_id.toString() == manager_id ? request.manager_approval : request.dir_approval}
+                    {/* Display current user's approval status if it matches their role, else general status */}
+                    {request.employee.manager_id === manager_id ? request.manager_approval : request.dir_approval}
                   </span>
                 )}
-
                 </td>
               </tr>
             ))}

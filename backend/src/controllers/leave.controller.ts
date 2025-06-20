@@ -317,6 +317,20 @@ export const ViewTeamLeave=async(req:Request,res:Response)=>{
   }
 }
 
+export const ViewAllTeamLeave=async(req:Request,res:Response)=>{
+  try{
+    const {id} = req.params;
+    const {year,month}=req.body;
+    const teamLeaves=await leaveService.getAllTeamLeaveById(Number(id),Number(year),Number(month));
+    res.status(200).json(teamLeaves);
+  }
+  catch(err)
+  {
+    console.error(err);
+    res.status(400).json({error:"Error in viewing all team leaves"});
+  }
+}
+
 export const isClashing=async(req: Request, res: Response)=>
 {
   try

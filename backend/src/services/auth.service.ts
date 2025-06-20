@@ -8,12 +8,12 @@ export class AuthService {
 
   async login(email_id: string, password: string) {
     console.log("Searching for email_id:", email_id);
-    const user = await this.userRepository.findOne({ where: { email_id } });
+    const user = await this.userRepository.findOne({ where: { email_id },
+    relations: ["department","role","manager","hr"] });
     console.log("Query result:", user);
     if (!user) {
       throw new Error("User not found");
     }
-    // console.log(user);
     console.log(email_id);
     console.log(password);
     console.log(user.password);
@@ -21,7 +21,7 @@ export class AuthService {
     if (password !== user.password) {
       throw new Error("Invalid credentials");
     }
-
+ 
     const token = jwt.sign(
       {
         id: user.emp_id,
@@ -37,15 +37,7 @@ export class AuthService {
     return {
       message: "Login successful",
       token,
-      user: {
-        id: user.emp_id,
-        email: user.email_id,
-        role_id:user.role_id,
-        name: user.name,
-        man_id: user.manager_id,
-        hr_id: user.hr_id,
-        dir__id: user.dir_id
-      },
+      user
     };
   }
 }

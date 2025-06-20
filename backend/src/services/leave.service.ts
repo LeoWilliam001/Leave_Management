@@ -63,14 +63,14 @@ export class LeaveService {
       where:{emp_id: data.emp_id, leave_type_id:leaveRequest.leave_type}
     });
 
-    console.log("Balance leaves : "+leaveBal);
+    console.log("Balance leaves : "+leaveBal.bal_days);
 
     if (leaveBal) {
       leaveBal.bal_days -= data.num_days;
       await this.leaveBalRepo.save(leaveBal);
     }
 
-    console.log("After updation : "+leaveBal);
+    console.log("After updation : "+leaveBal.bal_days);
     
     return await this.leaveApprovalRepo.save(leaveApps);
   }
@@ -155,7 +155,6 @@ export class LeaveService {
     });
   }
 
-
   async getTeamLeaveById(id: number) {
     const employeeRepo = AppDataSource.getRepository(Employee);
     const leaveRepo = AppDataSource.getRepository(LeaveRequest);
@@ -190,6 +189,7 @@ export class LeaveService {
     const today=new Date();
     const leaveRequests = await leaveRepo.createQueryBuilder("leave")
     .where("leave.emp_id IN (:...memberIds)", { memberIds })
+    .andWhere("leave.status = :status", { status: LeaveStatus.Approved })
     .andWhere(":today BETWEEN leave.start_date AND leave.end_date", { today })
     .leftJoinAndSelect("leave.employee", "employee") 
     .getMany();
@@ -197,6 +197,64 @@ export class LeaveService {
     console.log(leaveRequests);
   
     return leaveRequests;
+  }
+
+  async getAllTeamLeaveById(id: number, year:number, month:number) {
+    const employeeRepo = AppDataSource.getRepository(Employee);
+    const leaveRepo = AppDataSource.getRepository(LeaveRequest);
+    const employee = await employeeRepo.findOne({ where: { emp_id: id } });
+  
+    const whereConditions = [];
+  
+    whereConditions.push({
+      manager_id: In(employee?.manager_id != null ? [id, employee.manager_id] : [id]),
+    });
+  
+    whereConditions.push({
+      hr_id: In(employee?.hr_id != null ? [id, employee.hr_id] : [id]),
+    });
+  
+    whereConditions.push({
+      dir_id: In(employee?.dir_id != null ? [id, employee.dir_id] : [id]),
+    });
+  
+    whereConditions.push({ emp_id: id });
+  
+    const teamMembers = await employeeRepo.find({
+      where: whereConditions,
+    });
+  
+    if (!teamMembers.length) {
+      return [];
+    }
+  
+    const memberIds = teamMembers.map(member => member.emp_id);
+    console.log(memberIds);
+    const startOfMonth = new Date(year, month, 1);
+    const endOfMonth = new Date(year, month + 1, 0); // last day of the month
+
+    const leaveRequests = await leaveRepo.createQueryBuilder("leave")
+      .where("leave.emp_id IN (:...memberIds)", { memberIds })
+      .andWhere("leave.status = :status", { status: LeaveStatus.Approved })
+      .andWhere(
+        "leave.start_date <= :endOfMonth AND leave.end_date >= :startOfMonth",
+        { startOfMonth, endOfMonth }
+      )
+      .leftJoinAndSelect("leave.leaveType", "leaveType")
+      .getMany();
+
+    console.log(leaveRequests);
+    const groupedLeaves = teamMembers.map(member => {
+      const leaves = leaveRequests.filter(lr => lr.emp_id === member.emp_id);
+      return leaves.length > 0
+        ? {
+            emp: member,
+            leaves,
+          }
+        : null;
+    }).filter(entry => entry !== null);    
+    return groupedLeaves;
+    
   }
 
   async isClashing(id: number, sdate:Date, edate:Date)

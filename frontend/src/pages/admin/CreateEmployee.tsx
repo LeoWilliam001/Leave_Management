@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import Sidebar from "./AdminSideBar";
 import "../../styles/CreateEmp.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext"; // Import useAuth hook
 
 const CreateEmp: React.FC = () => {
   const navigate = useNavigate();
+  const { token } = useAuth(); // Get token from useAuth hook
+
   const [formData, setFormData] = useState({
     name: "",
     password: "",
@@ -18,8 +21,6 @@ const CreateEmp: React.FC = () => {
     address: "",
     phno: ""
   });
-
-  const token = localStorage.getItem("token");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,6 +36,11 @@ const CreateEmp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (!token) { // Ensure token is available before making the request
+        alert("Authentication token not found. Please log in.");
+        return;
+      }
+
       const res = await fetch("http://localhost:3000/api/users/", {
         method: "POST",
         headers: {
@@ -65,7 +71,7 @@ const CreateEmp: React.FC = () => {
           >
             &times;
           </button>
-  
+
           <h2 style={{ color: '#3498db' }}>Create Employee</h2>
           <form onSubmit={handleSubmit} className="create-emp-form">
             <div>
@@ -121,7 +127,7 @@ const CreateEmp: React.FC = () => {
         </div>
       </div>
     </div>
-  );  
+  );
 };
 
 export default CreateEmp;

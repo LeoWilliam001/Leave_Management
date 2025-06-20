@@ -1,0 +1,230 @@
+/* TeamCalendar.css */
+
+.team-calendar-wrapper {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+  min-height: calc(100vh - 40px); /* Adjust for padding */
+}
+
+.team-calendar-header {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.month-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.month-navigation button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.month-navigation button:hover {
+  background-color: #0056b3;
+}
+
+.current-month-display {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #555;
+}
+
+/* New container for the table to allow scrolling */
+.team-calendar-table-container {
+  overflow-x: auto; /* Enables horizontal scrolling */
+  border: 1px solid #ddd; /* Optional: border around the whole table */
+  border-radius: 8px;
+  margin: 0 auto; /* Center the table within its container */
+}
+
+.team-calendar-table {
+  width: 100%; /* Make table take full width of its container */
+  border-collapse: collapse; /* Collapse borders between cells */
+  table-layout: fixed; /* Ensures columns have equal width based on content or explicit width */
+}
+
+.team-calendar-table th,
+.team-calendar-table td {
+  padding: 8px 5px;
+  text-align: center;
+  /* border: 1px solid #eee; Apply border to all cells */
+  vertical-align: top; /* Align content to the top within cells */
+  min-height: 40px; /* Ensure consistent height for cells */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  overflow: hidden; /* Hide overflow within cells */
+}
+
+/* Header styling */
+.team-calendar-table thead th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+  color: #333;
+  position: sticky;
+  top: 0; /* Sticky header row */
+  z-index: 10;
+}
+
+.team-calendar-table .employee-name-header {
+  text-align: left;
+  padding-left: 10px;
+  background-color: #d0d0d0;
+  position: sticky;
+  left: 0; /* Sticky first column (employee name) */
+  z-index: 11; /* Higher z-index to overlap day headers when sticky */
+  width: 150px; /* Set a fixed width for the employee name column */
+  min-width: 150px; /* Ensure it doesn't shrink too much */
+}
+
+/* Day headers - set a fixed width for each day cell */
+.team-calendar-table .day-header {
+  width: 30px; /* Fixed width for each day cell */
+  min-width: 20px;
+}
+
+/* Employee name column styling for data rows */
+.team-calendar-table tbody td:first-child {
+  /* Selects the first td (employee name) in each tbody row */
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: left;
+  padding-left: 10px;
+  position: sticky;
+  left: 0; /* Sticky first column (employee name) */
+  z-index: 9; /* Ensure employee names stay visible over day cells */
+  white-space: nowrap; /* Keep employee names on one line */
+  width: 150px; /* Match header width */
+  min-width: 150px;
+}
+
+/* Day cells styling */
+.team-calendar-table .team-calendar-day-cell {
+  background-color: #fff; /* Default background for cells */
+  vertical-align: top; /* Ensure content starts at the top of the cell */
+  position: relative; /* For positioning internal elements if needed */
+}
+
+/* Leave block styling - now just an internal element, no longer carries the main color */
+.leave-block {
+  display: block; /* Make it a block to stack below day number */
+  height: 5px; /* Small height for a subtle marker or just to hold tooltip */
+  width: 100%; /* Spans full width of cell */
+  margin: 2px auto; /* Small margin */
+  border-radius: 2px;
+  background-color: transparent; /* Ensure it does NOT cover TD's background */
+  opacity: 1; /* Reset opacity if it was set to 0.8 before */
+  box-shadow: none; /* Remove shadow if it was set before */
+}
+
+/* Specific leave type colors - Increased specificity to apply to the TD */
+.team-calendar-table td.casual-leave-bg {
+  background-color: #87ceeb; /* Sky Blue */
+  border-color: #87ceeb
+}
+
+.team-calendar-table td.sick-leave-bg {
+  background-color: #ffa07a; /* Light Salmon */
+  border-color: #ffa07a;
+  /* border-radius: 50px; */
+}
+
+.team-calendar-table td.paid-leave-bg {
+  background-color: #90ee90; /* Light Green */
+  border-color: #90ee90
+}
+
+.team-calendar-table td.default-leave-bg {
+  background-color: #ccc; /* Grey for undefined types */
+}
+
+/* Today highlight - now uses a border to combine with background */
+.today-highlight {
+  border: 2px solid #4ade80; /* green-400 */
+  border-radius: 4px; /* Matches the cell's intended roundness */
+  box-sizing: border-box; /* Ensures border is inside padding/width */
+}
+
+.leave-legend {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.legend-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 15px;
+}
+
+.legend-box {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.casual-leave-bg {
+  background-color: #87ceeb; /* Yellow */
+}
+.sick-leave-bg {
+  background-color: #ffa07a; /* Red */
+}
+.paid-leave-bg {
+  background-color: #90ee90; /* Blue */
+}
+.default-leave-bg {
+  background-color: #ccc; /* Gray */
+}
+
+.weekend-bg {
+  background-color: #2cb633 !important; /* Light pink or any color */
+}
+
+
+/* .today-highlight {
+  background-color: #ff67ff;
+  border-radius: 100px;
+} */
+
+.weekend-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(30deg, rgba(253, 0, 0, 0.718) 20%, transparent 25%, transparent 50%, rgba(255, 234, 234, 0.6) 50%, rgba(255, 234, 234, 0.6) 75%, transparent 75%, transparent);
+  background-size: 8px 8px;
+  z-index: 0;
+  pointer-events: none;
+  /* border-radius: inherit; */
+}
+
+.team-calendar-day-cell {
+  position: relative;
+  z-index: 1;
+}
+.day-number {
+  position: relative;
+  z-index: 2;
+}
+
+.no-leaves-message {
+  margin-top: 1rem;
+  font-style: italic;
+  color: gray;
+  text-align: center;
+}
